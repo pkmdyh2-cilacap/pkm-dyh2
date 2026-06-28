@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard PKP</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@media (max-width:640px){button,a,select,input{min-height:44px!important;display:inline-flex;align-items:center}body{padding-left:.75rem;padding-right:.75rem}}</style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-6 font-sans antialiased">
+
+<div class="max-w-7xl mx-auto">
+  <h1 class="text-2xl font-bold mb-1">Dashboard Data PKP</h1>
+  <p class="text-slate-500 text-sm mb-5">Rekap capaian indikator dari seluruh klaster</p>
+
+  <a href="index.html" class="inline-block mb-5 px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-500 text-white hover:bg-emerald-600">&larr; Kembali ke Beranda</a>
+
+  <!-- ================= FILTER ================= -->
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <h2 class="text-base font-semibold mb-3">Filter Data</h2>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Pilih Klaster</label>
+        <select id="filterKlaster" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+          <option value="0">Semua Klaster</option>
+          <option value="1">Klaster 1</option>
+          <option value="2">Klaster 2</option>
+          <option value="3">Klaster 3</option>
+          <option value="4">Klaster 4</option>
+          <option value="5">Klaster 5</option>
+        </select>
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Dari Bulan</label>
+        <input type="month" id="filterDari" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Sampai Bulan</label>
+        <input type="month" id="filterSampai" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+      </div>
+      <div class="flex gap-2">
+        <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-emerald-500 text-white hover:bg-emerald-600 flex-1" id="btnTerapkan">Terapkan Filter</button>
+        <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnResetFilter">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= STATS ================= -->
+  <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5" id="statsContainer">
+    <div class="bg-white rounded-xl shadow-sm p-5 text-center">
+      <div class="text-3xl font-bold text-slate-700" id="statTotal">0</div>
+      <div class="text-xs text-slate-400 mt-1">Total Data</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 text-center">
+      <div class="text-3xl font-bold text-green-600" id="statTercapai">0</div>
+      <div class="text-xs text-slate-400 mt-1">Mencapai Target</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 text-center">
+      <div class="text-3xl font-bold text-red-600" id="statBelum">0</div>
+      <div class="text-xs text-slate-400 mt-1">Belum Mencapai Target</div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-5 text-center">
+      <div class="text-3xl font-bold text-emerald-600" id="statPersen">0%</div>
+      <div class="text-xs text-slate-400 mt-1">Persentase Tercapai</div>
+    </div>
+  </div>
+
+  <!-- ================= TABEL DATA ================= -->
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <h2 class="text-base font-semibold mb-3">Data Capaian</h2>
+    <div class="flex gap-3 flex-wrap items-end mb-4">
+      <div class="flex-1 min-w-[140px] flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Cari Data</label>
+        <input type="text" id="cari" placeholder="Ketik kata kunci..." class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+      </div>
+      <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnResetCari">Hapus Pencarian</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Klaster</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Unit</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Periode</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Indikator</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Target Thn</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Target Bln</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Aktual</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Status</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Analisa</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">RTL</th>
+          </tr>
+        </thead>
+        <tbody id="tabel"></tbody>
+      </table>
+      <div class="text-center text-slate-400 py-6" id="empty">Memuat data...</div>
+      <div id="paginasi" class="flex items-center justify-center gap-3.5 mt-3.5 flex-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://databank-pkm.onrender.com/api';
+const $ = id => document.getElementById(id);
+
+const BULAN_NAMA = ["", "Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+let dataCache = [];
+let halamanTabel = 1;
+const BARIS_PER_HAL = 15;
+
+function esc(s) { return (s ?? "").toString().replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+
+function fmt(v, satuan) {
+  if (v === undefined || v === null || v === "") return "-";
+  return satuan === "persen" ? v + "%" : v;
+}
+
+function parsePeriode(v) {
+  if (!v) return null;
+  const parts = v.split(" ");
+  const namaBulan = parts.slice(0, -1).join(" ");
+  const tahun = parts[parts.length - 1];
+  if (!tahun) return null;
+  const idx = BULAN_NAMA.indexOf(namaBulan);
+  if (idx === -1) return null;
+  return { tahun, bulan: String(idx).padStart(2, "0"), bulanAngka: idx };
+}
+
+async function muatDataKlaster(klaster) {
+  try {
+    return await api(`/entries?klaster=${klaster}`);
+  } catch (e) {
+    console.error(`Gagal muat klaster ${klaster}:`, e);
+    return [];
+  }
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+async function muatSemuaData() {
+  const hasil = [];
+  const promises = [];
+  for (let k = 1; k <= 5; k++) {
+    promises.push(muatDataKlaster(k).then(data => {
+      (data || []).forEach(d => hasil.push({ ...d, klaster: k }));
+    }));
+  }
+  await Promise.all(promises);
+  return hasil;
+}
+
+function dataTersaring() {
+  const klaster = parseInt($("filterKlaster").value);
+  const dari = $("filterDari").value;
+  const sampai = $("filterSampai").value;
+  const kunci = ($("cari").value || "").toLowerCase().trim();
+
+  return dataCache.filter(v => {
+    if (klaster > 0 && v.klaster !== klaster) return false;
+
+    if (dari) {
+      const t = v.tahun && v.bulan ? `${v.tahun}-${v.bulan}` : "";
+      if (t && t < dari) return false;
+    }
+    if (sampai) {
+      const t = v.tahun && v.bulan ? `${v.tahun}-${v.bulan}` : "";
+      if (t && t > sampai) return false;
+    }
+
+    if (kunci) {
+      const vals = [v.petugas, v.unit, v.periode, v.indikator_nama, v.status_capaian, v.analisa, v.rtl, `Klaster ${v.klaster}`];
+      if (!vals.map(x => (x ?? "").toString().toLowerCase()).join(" ").includes(kunci)) return false;
+    }
+
+    return true;
+  });
+}
+
+function renderStats(semua) {
+  const total = semua.length;
+  const tercapai = semua.filter(d => d.status_capaian === "Mencapai Target").length;
+  const belum = total - tercapai;
+  const persen = total ? Math.round((tercapai / total) * 100) : 0;
+
+  $("statTotal").textContent = total;
+  $("statTercapai").textContent = tercapai;
+  $("statBelum").textContent = belum;
+  $("statPersen").textContent = persen + "%";
+}
+
+function renderTabel() {
+  const tb = $("tabel"); tb.innerHTML = "";
+  const semua = dataTersaring();
+  renderStats(semua);
+
+  $("empty").style.display = semua.length ? "none" : "block";
+  $("empty").textContent = dataCache.length && !semua.length ? "Tidak ada yang cocok." : "Belum ada data.";
+
+  const totalHal = Math.max(1, Math.ceil(semua.length / BARIS_PER_HAL));
+  if (halamanTabel > totalHal) halamanTabel = totalHal;
+  if (halamanTabel < 1) halamanTabel = 1;
+
+  const baris = semua.slice((halamanTabel - 1) * BARIS_PER_HAL, halamanTabel * BARIS_PER_HAL);
+
+  baris.forEach(v => {
+    const ok = v.status_capaian === "Mencapai Target";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="p-2.5 border-b border-slate-200"><span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Klaster ${esc(v.klaster)}</span></td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.petugas || v.unit)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.periode)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.indikator_nama)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.target_tahunan)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.target_bulanan)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(fmt(v.aktual, v.satuan))}</td>
+      <td class="p-2.5 border-b border-slate-200"><span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${esc(v.status_capaian)}</span></td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.analisa)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.rtl)}</td>`;
+    tb.appendChild(tr);
+  });
+
+  renderPaginasi(semua.length, totalHal);
+}
+
+function renderPaginasi(totalData, totalHal) {
+  const wrap = $("paginasi");
+  if (totalData <= BARIS_PER_HAL) { if (wrap) wrap.innerHTML = ""; return; }
+  const mulai = (halamanTabel - 1) * BARIS_PER_HAL + 1;
+  const akhir = Math.min(halamanTabel * BARIS_PER_HAL, totalData);
+  if (!wrap) return;
+  wrap.innerHTML = `<button class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="halPrev" ${halamanTabel <= 1 ? "disabled" : ""}>&#8249; Sebelumnya</button>
+    <span class="text-xs text-slate-600">${mulai}&ndash;${akhir} dari ${totalData} &middot; Hal ${halamanTabel}/${totalHal}</span>
+    <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="halNext" ${halamanTabel >= totalHal ? "disabled" : ""}>Berikutnya &#8250;</button>`;
+  const prev = $("halPrev"), next = $("halNext");
+  if (prev) prev.onclick = () => { halamanTabel--; renderTabel(); };
+  if (next) next.onclick = () => { halamanTabel++; renderTabel(); };
+}
+
+function resetFilter() {
+  $("filterKlaster").value = "0";
+  $("filterDari").value = "";
+  $("filterSampai").value = "";
+  $("cari").value = "";
+  halamanTabel = 1;
+  renderTabel();
+}
+
+// ===================== EVENT =====================
+$("btnTerapkan").onclick = () => { halamanTabel = 1; renderTabel(); };
+$("btnResetFilter").onclick = resetFilter;
+$("btnResetCari").onclick = () => { $("cari").value = ""; halamanTabel = 1; renderTabel(); };
+$("cari").oninput = () => { halamanTabel = 1; renderTabel(); };
+
+(async () => {
+  const thn = new Date().getFullYear();
+  const bln = String(new Date().getMonth() + 1).padStart(2, "0");
+  $("filterSampai").value = `${thn}-${bln}`;
+  $("filterDari").value = `${thn}-01`;
+
+  dataCache = await muatSemuaData();
+  renderTabel();
+})();
+</script>
+</body>
+</html>

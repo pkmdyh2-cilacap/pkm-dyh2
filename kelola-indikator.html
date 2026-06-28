@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelola Indikator &amp; Target Tahunan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@media (max-width:640px){button,a,select,input{min-height:44px!important;display:inline-flex;align-items:center}.container,body{padding-left:.75rem;padding-right:.75rem}}</style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-6 font-sans antialiased">
+
+<div class="max-w-5xl mx-auto">
+  <h1 class="text-2xl font-bold mb-1">Kelola Indikator &amp; Target Tahunan</h1>
+  <p class="text-slate-500 text-sm mb-5">Manajemen indikator dan target per unit pelayanan</p>
+
+  <a href="index.html" class="inline-block mb-5 px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-500 text-white hover:bg-indigo-600">&larr; Kembali ke Beranda</a>
+
+  <!-- ================= MANAJEMEN INDIKATOR ================= -->
+  <h2 class="text-base font-semibold mb-3">&#9881;&#65039; Kelola Indikator &amp; Target Tahunan</h2>
+
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <div class="flex gap-3 flex-wrap items-end mb-4">
+      <div class="flex flex-col min-w-[200px]">
+        <label class="text-xs font-semibold mb-1.5">Pilih Klaster</label>
+        <select id="klasterSelect" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+          <option value="1">Klaster 1</option>
+          <option value="2">Klaster 2</option>
+          <option value="3">Klaster 3</option>
+          <option value="4">Klaster 4</option>
+          <option value="5" selected>Klaster 5</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <h2 class="text-base font-semibold mb-3">Kelola Unit Pelayanan</h2>
+    <div class="flex gap-3 flex-wrap items-end mb-3">
+      <div class="flex-1 min-w-[140px] flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Nama Unit</label>
+        <input type="text" id="unitNama" placeholder="cth. Rawat Jalan" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+      </div>
+      <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-indigo-500 text-white hover:bg-indigo-600" id="btnSimpanUnit">Tambah Unit</button>
+    </div>
+    <div class="text-sm py-2 min-h-5" id="statusUnit"></div>
+    <div class="overflow-x-auto mt-1">
+      <table class="w-full text-sm">
+        <thead><tr><th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Unit</th><th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Aksi</th></tr></thead>
+        <tbody id="tabelUnit"></tbody>
+      </table>
+      <div class="text-center text-slate-400 py-6" id="emptyUnit">Belum ada unit.</div>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <h2 class="text-base font-semibold mb-3">Tambah / Edit Indikator</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="col-span-full flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Nama Indikator</label>
+        <input type="text" id="indNama" placeholder="cth. Kunjungan rawat jalan umum" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Unit Pelayanan</label>
+        <select id="indUnit" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+          <option value="">— Pilih unit —</option>
+        </select>
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Target Capaian Tahunan <span class="font-normal text-slate-400">(fix)</span></label>
+        <input type="number" id="indTarget" step="any" placeholder="cth. 95" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Satuan Default <span class="font-normal text-slate-400">(opsional)</span></label>
+        <select id="indSatuan" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+          <option value="persen">Persen (%)</option>
+          <option value="angka">Angka</option>
+          <option value="teks">Teks</option>
+        </select>
+      </div>
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Target Bulanan Default</label>
+        <select id="indModeBulanan" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 bg-green-50">
+          <option value="bagi12">Tahunan ÷ 12</option>
+          <option value="sama">Sama dengan tahunan</option>
+          <option value="manual">Tentukan sendiri saat entri</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-2.5 flex-wrap mt-4">
+      <button class="px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-500 text-white hover:bg-indigo-600" id="btnSimpanInd">Simpan Indikator</button>
+      <button class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnResetInd">Batal</button>
+    </div>
+    <div class="text-sm py-2 min-h-5" id="statusInd"></div>
+
+    <div class="flex gap-3 flex-wrap items-end mt-4 mb-3">
+      <div class="flex-1 min-w-[140px] flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Cari Indikator</label>
+        <input type="text" id="cariInd" placeholder="Ketik kata kunci..." class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">
+      </div>
+      <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnResetCariInd">Hapus Pencarian</button>
+    </div>
+
+    <div class="overflow-x-auto mt-1">
+      <table class="w-full text-sm">
+        <thead>
+          <tr><th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Unit</th><th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Indikator</th><th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Target Tahunan</th><th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Aksi</th></tr>
+        </thead>
+        <tbody id="tabelInd"></tbody>
+      </table>
+      <div class="text-center text-slate-400 py-6" id="emptyInd">Belum ada indikator.</div>
+      <div id="paginasiInd" class="flex items-center justify-center gap-3.5 mt-3.5 flex-wrap"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API = 'https://databank-pkm.onrender.com/api';
+const $ = id => document.getElementById(id);
+
+let klasterAktif = 5;
+let unitCache = [], indikatorCache = [];
+let editIndId = null;
+const BARIS_PER_HAL = 5;
+let halamanInd = 1;
+
+function esc(s) { return (s ?? "").toString().replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+
+function setStatus(el, msg, ok = true) {
+  el.textContent = msg;
+  el.className = "text-sm py-2 min-h-5 " + (ok ? "text-green-600" : "text-red-600");
+  if (msg) setTimeout(() => { el.textContent = ""; }, 3500);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ===================== UNITS =====================
+async function muatUnit() {
+  try {
+    const data = await api(`/units?klaster=${klasterAktif}`);
+    unitCache = Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error("muatUnit gagal:", e);
+    unitCache = [];
+  }
+  const tb = $("tabelUnit"); tb.innerHTML = "";
+  $("emptyUnit").style.display = unitCache.length ? "none" : "block";
+  unitCache.forEach(u => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="p-2.5 border-b border-slate-200">${esc(u.nama)}</td>
+      <td class="p-2.5 border-b border-slate-200"><button class="px-3 py-2 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600" data-id="${u.id}">Hapus</button></td>`;
+    tb.appendChild(tr);
+    tr.querySelector("button").onclick = async () => {
+      if (!confirm(`Hapus unit "${u.nama}"?`)) return;
+      await api(`/units/${u.id}`, { method: 'DELETE' });
+      setStatus($("statusUnit"), "Unit dihapus.");
+      muatUnit();
+    };
+  });
+  isiDropdown();
+}
+
+function isiDropdown() {
+  const indU = $("indUnit");
+  const vIndU = indU.value;
+  indU.innerHTML = '<option value="">— Pilih unit —</option>';
+  unitCache.forEach(u => {
+    indU.appendChild(new Option(u.nama, u.nama));
+  });
+  if ([...indU.options].some(o => o.value === vIndU)) indU.value = vIndU;
+}
+
+async function simpanUnit() {
+  const nama = $("unitNama").value.trim();
+  if (!nama) { setStatus($("statusUnit"), "Nama unit wajib diisi.", false); return; }
+  try {
+    await api(`/units?klaster=${klasterAktif}`, { method: 'POST', body: JSON.stringify({ nama }) });
+    $("unitNama").value = "";
+    setStatus($("statusUnit"), "Unit ditambahkan.");
+    muatUnit();
+  } catch (e) {
+    setStatus($("statusUnit"), e.message, false);
+    muatUnit();
+  }
+}
+
+// ===================== INDIKATOR =====================
+async function muatIndikator() {
+  try {
+    indikatorCache = await api(`/indicators?klaster=${klasterAktif}`);
+    if (!Array.isArray(indikatorCache)) indikatorCache = [];
+  } catch (e) {
+    console.error("muatIndikator gagal:", e);
+    indikatorCache = [];
+  }
+  renderTabelInd();
+}
+
+function dataIndTersaring() {
+  const kunci = ($("cariInd").value || "").toLowerCase().trim();
+  if (!kunci) return indikatorCache;
+  return indikatorCache.filter(it => [it.nama, it.unit, it.target].map(x => (x ?? "").toString().toLowerCase()).join(" ").includes(kunci));
+}
+
+function renderTabelInd() {
+  const tb = $("tabelInd"); tb.innerHTML = "";
+  const semua = dataIndTersaring();
+  $("emptyInd").style.display = semua.length ? "none" : "block";
+  $("emptyInd").textContent = indikatorCache.length && !semua.length ? "Tidak ada yang cocok." : "Belum ada indikator.";
+  const totalHal = Math.max(1, Math.ceil(semua.length / BARIS_PER_HAL));
+  if (halamanInd > totalHal) halamanInd = totalHal;
+  if (halamanInd < 1) halamanInd = 1;
+  const baris = semua.slice((halamanInd - 1) * BARIS_PER_HAL, halamanInd * BARIS_PER_HAL);
+  baris.forEach(it => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="p-2.5 border-b border-slate-200">${esc(it.unit || "-")}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(it.nama)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(it.target)}</td>
+      <td class="p-2.5 border-b border-slate-200">
+        <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600">Edit</button>
+        <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600">Hapus</button>
+      </td>`;
+    tb.appendChild(tr);
+    tr.querySelectorAll("button")[0].onclick = () => {
+      $("indNama").value = it.nama;
+      $("indUnit").value = it.unit || "";
+      $("indSatuan").value = it.satuan || "persen";
+      perbaruiTipeTargetIndikator();
+      $("indTarget").value = it.target;
+      $("indModeBulanan").value = it.mode_bulanan || "bagi12";
+      editIndId = it.id;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    tr.querySelectorAll("button")[1].onclick = async () => {
+      if (!confirm("Hapus indikator ini?")) return;
+      await api(`/indicators/${it.id}`, { method: 'DELETE' });
+      setStatus($("statusInd"), "Indikator dihapus.");
+      muatIndikator();
+    };
+  });
+  renderPaginasiInd(semua.length, totalHal);
+}
+
+function renderPaginasiInd(totalData, totalHal) {
+  const wrap = $("paginasiInd");
+  if (totalData <= BARIS_PER_HAL) { wrap.innerHTML = ""; return; }
+  const mulai = (halamanInd - 1) * BARIS_PER_HAL + 1;
+  const akhir = Math.min(halamanInd * BARIS_PER_HAL, totalData);
+  wrap.innerHTML = `<button class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="indPrev" ${halamanInd <= 1 ? "disabled" : ""}>&#8249; Sebelumnya</button>
+    <span class="text-xs text-slate-600">${mulai}&ndash;${akhir} dari ${totalData} &middot; Hal ${halamanInd}/${totalHal}</span>
+    <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="indNext" ${halamanInd >= totalHal ? "disabled" : ""}>Berikutnya &#8250;</button>`;
+  const prev = $("indPrev"), next = $("indNext");
+  if (prev) prev.onclick = () => { halamanInd--; renderTabelInd(); };
+  if (next) next.onclick = () => { halamanInd++; renderTabelInd(); };
+}
+
+async function simpanIndikator() {
+  const nama = $("indNama").value.trim();
+  const unit = $("indUnit").value;
+  const satuan = $("indSatuan").value;
+  const modeBulanan = $("indModeBulanan").value;
+  const teks = satuan === "teks";
+  const target = teks ? $("indTarget").value.trim() : parseFloat($("indTarget").value);
+  if (!nama) { setStatus($("statusInd"), "Nama indikator wajib diisi.", false); return; }
+  if (!unit) { setStatus($("statusInd"), "Pilih unit pelayanan.", false); return; }
+  if (teks && !target) { setStatus($("statusInd"), "Target tahunan wajib diisi.", false); return; }
+  if (!teks && isNaN(target)) { setStatus($("statusInd"), "Target tahunan harus angka.", false); return; }
+  try {
+    const payload = { nama, unit, target, satuan, modeBulanan, bor: false };
+    if (editIndId) {
+      await api(`/indicators/${editIndId}`, { method: 'PUT', body: JSON.stringify(payload) });
+      setStatus($("statusInd"), "Indikator diperbarui.");
+    } else {
+      await api(`/indicators?klaster=${klasterAktif}`, { method: 'POST', body: JSON.stringify(payload) });
+      setStatus($("statusInd"), "Indikator ditambahkan.");
+    }
+    resetIndikator();
+    muatIndikator();
+  } catch (e) { setStatus($("statusInd"), "Gagal: " + e.message, false); }
+}
+
+function resetIndikator() {
+  ["indNama","indTarget"].forEach(f => $(f).value = "");
+  $("indSatuan").value = "persen"; $("indUnit").value = ""; $("indModeBulanan").value = "bagi12";
+  editIndId = null;
+}
+
+function perbaruiTipeTargetIndikator() {
+  const teks = $("indSatuan").value === "teks";
+  const inp = $("indTarget");
+  inp.type = teks ? "text" : "number";
+  inp.placeholder = teks ? "cth. Tersedia / Ada dokumen" : "cth. 95";
+}
+
+// ===================== EVENT BINDING =====================
+$("btnSimpanInd").onclick = simpanIndikator;
+$("btnResetInd").onclick = resetIndikator;
+$("indSatuan").onchange = perbaruiTipeTargetIndikator;
+$("cariInd").oninput = () => { halamanInd = 1; renderTabelInd(); };
+$("btnResetCariInd").onclick = () => { $("cariInd").value = ""; halamanInd = 1; renderTabelInd(); };
+$("btnSimpanUnit").onclick = simpanUnit;
+$("unitNama").addEventListener("keydown", e => { if (e.key === "Enter") simpanUnit(); });
+$("klasterSelect").onchange = async () => {
+  klasterAktif = parseInt($("klasterSelect").value);
+  halamanInd = 1;
+  await muatUnit();
+  await muatIndikator();
+};
+
+(async () => {
+  await muatUnit();
+  await muatIndikator();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entri Data Capaian Indikator Klaster 4</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>@media (max-width:640px){button,a,select,input{min-height:44px!important;display:inline-flex;align-items:center}body{padding-left:.75rem;padding-right:.75rem}}</style>
+</head>
+<body class="bg-slate-100 text-slate-800 p-6 font-sans antialiased">
+
+<div class="max-w-5xl mx-auto">
+  <h1 class="text-2xl font-bold mb-1">Entri Data Capaian Indikator Klaster 4</h1>
+  <p class="text-slate-500 text-sm mb-5">Pencatatan capaian bulanan terhadap target indikator</p>
+
+  <a href="index.html" class="inline-block mb-5 px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-500 text-white hover:bg-emerald-600">&larr; Kembali ke Beranda</a>
+
+  <!-- ================= FORM ENTRI CAPAIAN ================= -->
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <h2 class="text-base font-semibold mb-3">Form Entri Capaian</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Unit Pelayanan</label>
+        <select id="petugas" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+          <option value="">— Pilih unit —</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Waktu Entri</label>
+        <input type="month" id="waktu" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+      </div>
+
+      <div class="col-span-full flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Indikator</label>
+        <select id="indikator" class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+          <option value="">— Pilih indikator —</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Target Capaian Tahunan <span class="font-normal text-slate-400">(otomatis)</span></label>
+        <input type="number" id="targetTahunan" disabled class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full bg-slate-50 text-slate-600 cursor-not-allowed">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Target Capaian Bulanan</label>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="number" id="targetBulanan" step="any" placeholder="Target" class="w-full px-3 py-2.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+          <select id="modeBulanan" class="px-2 py-2.5 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:border-emerald-500">
+            <option value="bagi12">/12</option>
+            <option value="sama">= Tahunan</option>
+            <option value="manual">Manual</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Capaian Target Hingga Bulan Ini <span class="font-normal text-slate-400" id="capaianKumulatifLabel">(Jan s/d bulan ini)</span></label>
+        <input type="text" id="capaianKumulatif" disabled class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full bg-slate-50 text-slate-600 cursor-not-allowed">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Capaian Aktual Bulan Ini</label>
+        <div class="flex gap-2">
+          <input type="number" id="aktual" step="any" placeholder="Nilai capaian" class="flex-1 px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+          <select id="satuan" class="hidden">
+            <option value="persen">Persen (%)</option>
+            <option value="angka">Angka</option>
+            <option value="teks">Teks</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Status Capaian <span class="font-normal text-slate-400" id="statusHint">(otomatis)</span></label>
+        <div class="bg-slate-50 border border-dashed border-slate-300 rounded-lg px-3 py-2.5 text-sm" id="statusCapaian">—</div>
+        <select id="statusManual" class="hidden px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 bg-green-50">
+          <option value="">— Pilih status —</option>
+          <option value="Mencapai Target">Mencapai Target</option>
+          <option value="Belum Mencapai Target">Belum Mencapai Target</option>
+        </select>
+      </div>
+
+      <div class="col-span-full flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Analisa <span class="font-normal text-slate-400" id="analisaHint"></span></label>
+        <textarea id="analisa" placeholder="Analisa terhadap capaian..." class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 resize-y min-h-[70px] bg-green-50"></textarea>
+      </div>
+
+      <div class="col-span-full flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Rencana Tindak Lanjut <span class="font-normal text-slate-400" id="rtlHint"></span></label>
+        <textarea id="rtl" placeholder="Rencana tindak lanjut..." class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 resize-y min-h-[70px] bg-green-50"></textarea>
+      </div>
+    </div>
+
+    <div class="flex gap-2.5 flex-wrap mt-4">
+      <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-emerald-500 text-white hover:bg-emerald-600" id="btnSimpan">Simpan</button>
+      <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnReset">Reset</button>
+    </div>
+    <div class="text-sm py-2 min-h-5" id="status"></div>
+  </div>
+
+  <!-- ================= TABEL DATA ================= -->
+  <div class="bg-white rounded-xl shadow-sm p-5 mb-5">
+    <h2 class="text-base font-semibold mb-3">Data Capaian Tersimpan</h2>
+    <div class="flex gap-3 flex-wrap items-end mb-4">
+      <div class="flex-1 min-w-[140px] flex flex-col">
+        <label class="text-xs font-semibold mb-1.5">Cari Data</label>
+        <input type="text" id="cari" placeholder="Ketik kata kunci..." class="px-3 py-2.5 border border-slate-200 rounded-lg text-sm w-full focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+      </div>
+      <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnResetCari">Hapus Pencarian</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Petugas</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Periode</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Indikator</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Target Thn</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Target Bln</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Aktual</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Status</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Analisa</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">RTL</th>
+            <th class="p-2.5 text-left border-b border-slate-200 bg-slate-50 text-xs whitespace-nowrap">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabel"></tbody>
+      </table>
+      <div class="text-center text-slate-400 py-6" id="empty">Belum ada data.</div>
+      <div id="paginasi" class="flex items-center justify-center gap-3.5 mt-3.5 flex-wrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'https://databank-pkm.onrender.com/api';
+const $ = id => document.getElementById(id);
+const BULAN_NAMA = ["", "Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+
+const KLASTER = 4;
+let unitCache = [], indikatorCache = [], dataCache = [];
+let editDataId = null;
+const BARIS_PER_HAL = 5;
+let halamanTabel = 1;
+
+function esc(s) { return (s ?? "").toString().replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
+
+function setStatus(el, msg, ok = true) {
+  el.textContent = msg;
+  el.className = "text-sm py-2 min-h-5 " + (ok ? "text-green-600" : "text-red-600");
+  if (msg) setTimeout(() => { el.textContent = ""; }, 3500);
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: { 'Content-Type': 'application/json' },
+    ...opts,
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Request failed');
+  return data;
+}
+
+// ===================== LOAD DATA =====================
+async function muatUnit() {
+  try {
+    const data = await api(`/units?klaster=${KLASTER}`);
+    unitCache = Array.isArray(data) ? data : [];
+  } catch (e) {
+    console.error("muatUnit gagal:", e);
+    unitCache = [];
+  }
+  const sel = $("petugas");
+  const v = sel.value;
+  sel.innerHTML = '<option value="">— Pilih unit —</option>';
+  unitCache.forEach(u => sel.appendChild(new Option(u.nama, u.nama)));
+  if ([...sel.options].some(o => o.value === v)) sel.value = v;
+}
+
+async function muatIndikator() {
+  try {
+    indikatorCache = await api(`/indicators?klaster=${KLASTER}`);
+    if (!Array.isArray(indikatorCache)) indikatorCache = [];
+  } catch (e) {
+    console.error("muatIndikator gagal:", e);
+    indikatorCache = [];
+  }
+  isiDropdownIndikator();
+}
+
+function isiDropdownIndikator() {
+  const sel = $("indikator");
+  const terpilih = sel.value;
+  const unit = $("petugas").value;
+  sel.innerHTML = '<option value="">— Pilih indikator —</option>';
+  indikatorCache.filter(it => !unit || it.unit === unit).forEach(it => {
+    const o = document.createElement("option");
+    o.value = it.id; o.textContent = it.nama;
+    sel.appendChild(o);
+  });
+  if ([...sel.options].some(o => o.value === terpilih)) sel.value = terpilih;
+  else sel.value = "";
+}
+
+// ===================== LOGIKA FORM =====================
+function indikatorTerpilih() { return indikatorCache.find(it => it.id == $("indikator").value) || null; }
+function isTeks() { return $("satuan").value === "teks"; }
+
+function hitungTargetBulanan() {
+  const inp = $("targetBulanan");
+  const mode = $("modeBulanan").value;
+  const tTahun = parseFloat($("targetTahunan").value);
+  if (mode === "manual" || isNaN(tTahun)) {
+    inp.disabled = false;
+    inp.value = "";
+  } else if (mode === "bagi12") {
+    inp.value = (tTahun / 12).toFixed(2);
+    inp.disabled = true;
+  } else if (mode === "sama") {
+    inp.value = tTahun;
+    inp.disabled = true;
+  }
+  hitungStatus();
+}
+
+function perbaruiModeSatuan() {
+  const teks = isTeks();
+  const aktual = $("aktual"), tTahun = $("targetTahunan"), tBulan = $("targetBulanan");
+  if (teks) {
+    aktual.type = "text"; aktual.placeholder = "Keterangan capaian";
+    tTahun.type = "text"; tBulan.type = "text"; tBulan.placeholder = "Target (teks)";
+    tBulan.disabled = false;
+    $("statusCapaian").style.display = "none"; $("statusManual").classList.remove("hidden");
+    $("statusHint").textContent = "(pilih manual)";
+  } else {
+    aktual.type = "number"; aktual.placeholder = "Nilai capaian";
+    tTahun.type = "number"; tBulan.type = "number"; tBulan.placeholder = "Target";
+    $("statusCapaian").style.display = "block"; $("statusManual").classList.add("hidden");
+    $("statusHint").textContent = "(otomatis)";
+  }
+  hitungStatus();
+}
+
+function hitungStatus() {
+  const box = $("statusCapaian");
+  if (isTeks()) {
+    const pilih = $("statusManual").value;
+    box.dataset.status = pilih === "Mencapai Target" ? "ok" : (pilih === "Belum Mencapai Target" ? "no" : "");
+    terapkanRTL(); return;
+  }
+  const aktual = parseFloat($("aktual").value);
+  const tBulan = parseFloat($("targetBulanan").value);
+  if (isNaN(aktual) || isNaN(tBulan)) {
+    box.textContent = "\u2014"; box.dataset.status = ""; terapkanRTL(); return;
+  }
+  const mencapai = aktual >= tBulan;
+  box.textContent = mencapai ? "Mencapai Target" : "Belum Mencapai Target";
+  box.dataset.status = mencapai ? "ok" : "no";
+  terapkanRTL();
+}
+
+function terapkanRTL() {
+  const status = $("statusCapaian").dataset.status;
+  const rtl = $("rtl"), analisa = $("analisa");
+  if (status === "ok") {
+    rtl.value = "Monitoring Berkala"; rtl.disabled = true;
+    $("rtlHint").textContent = "(otomatis: Monitoring Berkala)";
+    analisa.value = "Sudah mencapai target yang ditetapkan"; analisa.disabled = true;
+    $("analisaHint").textContent = "(otomatis)";
+  } else if (status === "no") {
+    rtl.disabled = false; $("rtlHint").textContent = "(isi manual)";
+    if (rtl.value === "Monitoring Berkala") rtl.value = "";
+    analisa.disabled = false; $("analisaHint").textContent = "(isi manual)";
+    if (analisa.value === "Sudah mencapai target yang ditetapkan") analisa.value = "";
+  } else {
+    rtl.disabled = false; $("rtlHint").textContent = "";
+    analisa.disabled = false; $("analisaHint").textContent = "";
+  }
+}
+
+function hitungCapaianKumulatif() {
+  const it = indikatorTerpilih();
+  const waktu = $("waktu").value;
+  const bln = waktu ? waktu.split("-")[1] : "";
+  const thn = waktu ? waktu.split("-")[0] : "";
+  const el = $("capaianKumulatif");
+  const label = $("capaianKumulatifLabel");
+  if (!it || !bln || !thn) {
+    el.value = ""; label.textContent = isTeks() ? "(Capaian bulan sebelumnya)" : "(Jan s/d bulan ini)"; return;
+  }
+  const blnAngka = parseInt(bln, 10);
+  if (isTeks()) {
+    const prevBln = blnAngka === 1 ? 12 : blnAngka - 1;
+    const prevThn = blnAngka === 1 ? String(parseInt(thn, 10) - 1) : thn;
+    const prev = dataCache.find(d => String(d.indikator_id) === String(it.id) && d.tahun === prevThn && parseInt(d.bulan, 10) === prevBln);
+    label.textContent = "(Capaian bulan sebelumnya)";
+    el.value = prev ? (prev.aktual || "") : "";
+    return;
+  }
+  label.textContent = `(Jan s/d ${BULAN_NAMA[blnAngka] || ""})`;
+  const kumulatif = dataCache
+    .filter(d => String(d.indikator_id) === String(it.id) && d.tahun === thn && parseInt(d.bulan, 10) >= 1 && parseInt(d.bulan, 10) <= blnAngka)
+    .reduce((sum, d) => { const v = parseFloat(d.aktual); return isNaN(v) ? sum : sum + v; }, 0);
+  el.value = kumulatif > 0 ? kumulatif : "0";
+}
+
+function onPilihIndikator() {
+  const it = indikatorTerpilih();
+  if (it && it.satuan) $("satuan").value = it.satuan;
+  perbaruiModeSatuan();
+  $("targetTahunan").value = it ? (it.target ?? "") : "";
+  hitungTargetBulanan();
+  hitungCapaianKumulatif();
+}
+
+// ===================== SIMPAN DATA =====================
+async function simpan() {
+  const it = indikatorTerpilih();
+  const petugas = $("petugas").value.trim();
+  const waktu = $("waktu").value;
+  const bulan = waktu ? waktu.split("-")[1] : "";
+  const tahun = waktu ? waktu.split("-")[0] : "";
+  const teks = isTeks();
+  const aktualTeks = $("aktual").value.trim();
+  const aktualNum = parseFloat($("aktual").value);
+  const tBulan = parseFloat($("targetBulanan").value);
+  if (!petugas) return setStatus($("status"), "Unit petugas wajib dipilih.", false);
+  if (!bulan || !tahun) return setStatus($("status"), "Bulan dan tahun wajib diisi.", false);
+  if (!it) return setStatus($("status"), "Pilih indikator terlebih dahulu.", false);
+  let statusCap;
+  if (teks) {
+    if (!aktualTeks) return setStatus($("status"), "Capaian aktual wajib diisi.", false);
+    statusCap = $("statusManual").value;
+    if (!statusCap) return setStatus($("status"), "Pilih status capaian.", false);
+  } else {
+    if (isNaN(aktualNum)) return setStatus($("status"), "Capaian aktual wajib diisi.", false);
+    if (isNaN(tBulan)) return setStatus($("status"), "Target bulanan wajib diisi.", false);
+    statusCap = $("statusCapaian").textContent;
+  }
+  const rtl = $("rtl").value.trim();
+  if (statusCap === "Belum Mencapai Target" && !rtl)
+    return setStatus($("status"), "Rencana tindak lanjut wajib diisi.", false);
+  const data = {
+    petugas, unit: petugas, bulan, tahun, periode: `${BULAN_NAMA[+bulan]} ${tahun}`,
+    indikatorId: it.id, indikatorNama: it.nama, targetTahunan: it.target ?? "",
+    modeBulanan: $("modeBulanan").value,
+    targetBulanan: teks ? 0 : tBulan,
+    aktual: teks ? aktualTeks : aktualNum, satuan: $("satuan").value,
+    statusCapaian: statusCap, analisa: $("analisa").value.trim(), rtl,
+  };
+  try {
+    if (editDataId) {
+      await api(`/entries/${editDataId}`, { method: 'PUT', body: JSON.stringify(data) });
+      setStatus($("status"), "Data diperbarui.");
+    } else {
+      await api(`/entries?klaster=${KLASTER}`, { method: 'POST', body: JSON.stringify(data) });
+      setStatus($("status"), "Data berhasil disimpan.");
+    }
+    resetForm(); muatData();
+  } catch (e) { setStatus($("status"), "Gagal menyimpan: " + e.message, false); }
+}
+
+function resetForm() {
+  ["aktual","analisa","rtl","targetBulanan","targetTahunan"].forEach(f => $(f).value = "");
+  $("petugas").value = "";
+  $("waktu").value = new Date().toISOString().slice(0, 7);
+  isiDropdownIndikator(); $("indikator").value = "";
+  $("satuan").value = "persen";
+  $("statusCapaian").textContent = "\u2014"; $("statusCapaian").dataset.status = "";
+  $("statusManual").value = "";
+  $("statusCapaian").style.display = "block"; $("statusManual").classList.add("hidden");
+  $("statusHint").textContent = "(otomatis)";
+  $("targetTahunan").type = "number"; $("targetBulanan").type = "number";
+  $("targetBulanan").placeholder = "Target";
+  $("rtl").disabled = false; $("rtlHint").textContent = "";
+  $("analisa").disabled = false; $("analisaHint").textContent = "";
+  $("aktual").type = "number"; $("aktual").disabled = false; $("aktual").placeholder = "Nilai capaian";
+  $("capaianKumulatif").value = ""; $("capaianKumulatifLabel").textContent = "(Jan s/d bulan ini)";
+  editDataId = null; $("btnSimpan").textContent = "Simpan";
+}
+
+// ===================== DATA TABLE =====================
+function fmt(v, satuan) {
+  if (v === undefined || v === null || v === "") return "-";
+  return satuan === "persen" ? v + "%" : v;
+}
+
+async function muatData() {
+  try {
+    dataCache = await api(`/entries?klaster=${KLASTER}`);
+    if (!Array.isArray(dataCache)) dataCache = [];
+  } catch (e) {
+    console.error("muatData gagal:", e);
+    dataCache = [];
+  }
+  renderTabel();
+  hitungCapaianKumulatif();
+}
+
+function dataTabelTersaring() {
+  const kunci = ($("cari").value || "").toLowerCase().trim();
+  return dataCache.filter(v => {
+    if (!kunci) return true;
+    return [v.petugas, v.unit, v.periode, v.indikator_nama, v.status_capaian, v.analisa, v.rtl].map(x => (x ?? "").toString().toLowerCase()).join(" ").includes(kunci);
+  });
+}
+
+function renderTabel() {
+  const tb = $("tabel"); tb.innerHTML = "";
+  const semua = dataTabelTersaring();
+  $("empty").style.display = semua.length ? "none" : "block";
+  $("empty").textContent = dataCache.length && !semua.length ? "Tidak ada yang cocok." : "Belum ada data.";
+  const totalHal = Math.max(1, Math.ceil(semua.length / BARIS_PER_HAL));
+  if (halamanTabel > totalHal) halamanTabel = totalHal;
+  if (halamanTabel < 1) halamanTabel = 1;
+  const baris = semua.slice((halamanTabel - 1) * BARIS_PER_HAL, halamanTabel * BARIS_PER_HAL);
+  baris.forEach(v => {
+    const ok = v.status_capaian === "Mencapai Target";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td class="p-2.5 border-b border-slate-200">${esc(v.petugas)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.periode)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.indikator_nama)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.target_tahunan)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.target_bulanan)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(fmt(v.aktual, v.satuan))}</td>
+      <td class="p-2.5 border-b border-slate-200"><span class="inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${ok ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${esc(v.status_capaian)}</span></td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.analisa)}</td>
+      <td class="p-2.5 border-b border-slate-200">${esc(v.rtl)}</td>
+      <td class="p-2.5 border-b border-slate-200">
+        <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-amber-500 text-white hover:bg-amber-600">Edit</button>
+        <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-red-500 text-white hover:bg-red-600">Hapus</button>
+      </td>`;
+    tb.appendChild(tr);
+    tr.querySelectorAll("button")[0].onclick = () => {
+      $("petugas").value = v.petugas || v.unit || "";
+      isiDropdownIndikator();
+      $("waktu").value = (v.tahun && v.bulan) ? `${v.tahun}-${v.bulan}` : "";
+      $("indikator").value = v.indikator_id || "";
+      onPilihIndikator();
+      $("modeBulanan").value = v.mode_bulanan || "manual";
+      $("targetBulanan").value = v.target_bulanan;
+      $("targetBulanan").disabled = $("modeBulanan").value !== "manual";
+      $("aktual").value = v.aktual;
+      $("satuan").value = v.satuan || "persen";
+      perbaruiModeSatuan();
+      if (v.satuan === "teks") { $("aktual").value = v.aktual ?? ""; $("statusManual").value = v.status_capaian || ""; }
+      hitungStatus();
+      $("analisa").value = v.analisa || "";
+      $("rtl").value = v.rtl || "";
+      editDataId = v.id;
+      $("btnSimpan").textContent = "Perbarui";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    tr.querySelectorAll("button")[1].onclick = async () => {
+      if (!confirm("Hapus data ini?")) return;
+      await api(`/entries/${v.id}`, { method: 'DELETE' });
+      setStatus($("status"), "Data dihapus.");
+      muatData();
+    };
+  });
+  renderPaginasi(semua.length, totalHal);
+}
+
+function renderPaginasi(totalData, totalHal) {
+  const wrap = $("paginasi");
+  if (totalData <= BARIS_PER_HAL) { if (wrap) wrap.innerHTML = ""; return; }
+  const mulai = (halamanTabel - 1) * BARIS_PER_HAL + 1;
+  const akhir = Math.min(halamanTabel * BARIS_PER_HAL, totalData);
+  if (!wrap) return;
+  wrap.innerHTML = `<button class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="halPrev" ${halamanTabel <= 1 ? "disabled" : ""}>&#8249; Sebelumnya</button>
+    <span class="text-xs text-slate-600">${mulai}&ndash;${akhir} dari ${totalData} &middot; Hal ${halamanTabel}/${totalHal}</span>
+    <button class="px-3 py-2 rounded-lg text-xs font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="halNext" ${halamanTabel >= totalHal ? "disabled" : ""}>Berikutnya &#8250;</button>`;
+  const prev = $("halPrev"), next = $("halNext");
+  if (prev) prev.onclick = () => { halamanTabel--; renderTabel(); };
+  if (next) next.onclick = () => { halamanTabel++; renderTabel(); };
+}
+
+// ===================== EVENT BINDING =====================
+$("btnSimpan").onclick = simpan;
+$("btnReset").onclick = resetForm;
+$("petugas").onchange = () => { isiDropdownIndikator(); onPilihIndikator(); };
+$("indikator").onchange = onPilihIndikator;
+$("modeBulanan").onchange = hitungTargetBulanan;
+$("targetBulanan").oninput = hitungStatus;
+$("aktual").oninput = hitungStatus;
+$("waktu").onchange = hitungCapaianKumulatif;
+$("statusManual").onchange = hitungStatus;
+$("cari").oninput = () => { halamanTabel = 1; renderTabel(); };
+$("btnResetCari").onclick = () => { $("cari").value = ""; halamanTabel = 1; renderTabel(); };
+
+(async () => {
+  $("waktu").value = new Date().toISOString().slice(0, 7);
+  await muatUnit();
+  await muatIndikator();
+  await muatData();
+})();
+</script>
+</body>
+</html>
