@@ -12,11 +12,21 @@
       .nav-link, button, .btn-like { min-height:44px; display:flex; align-items:center; }
       .container { padding-left:0.75rem; padding-right:0.75rem; }
     }
+  .submenu-open{display:block!important}
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-  <nav class="w-64 bg-white border-r border-gray-200 shadow-sm fixed left-0 top-0 h-full z-10 overflow-y-auto">
+  <header class="md:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 z-20 flex items-center px-4 shadow-sm">
+    <button id="sidebarToggle" class="text-gray-700 text-xl w-10 h-10 flex items-center justify-center -ml-2" aria-label="Buka menu">
+      <i class="fas fa-bars"></i>
+    </button>
+    <img src="logo.png" alt="Puskesmas" class="h-8 ml-3">
+  </header>
+
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 z-20 hidden md:hidden"></div>
+
+  <nav id="sidebar" class="w-64 bg-white border-r border-gray-200 shadow-sm fixed left-0 top-0 h-full z-30 overflow-y-auto -translate-x-full transition-transform duration-300 md:translate-x-0">
     <div class="p-4 border-b border-gray-200">
       <img src="logo.png" alt="Puskesmas" class="h-12">
     </div>
@@ -25,10 +35,10 @@
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-users w-5"></i> Kepegawaian</a></li>
       <li><a href="pralokmin-klaster.html" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-chart-pie w-5"></i> Pralokmin Klaster</a></li>
       <li class="relative group">
-        <a href="#" class="nav-link flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100">
-          <i class="fas fa-file-alt w-5"></i> PKP <i class="fas fa-chevron-down text-xs ml-auto"></i>
+        <a href="#" id="pkpToggle" class="nav-link flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100">
+          <i class="fas fa-file-alt w-5"></i> PKP <i id="pkpChevron" class="fas fa-chevron-down text-xs ml-auto transition-transform"></i>
         </a>
-        <ul class="ml-4 border-l border-gray-200 hidden group-hover:block">
+        <ul id="pkpSubmenu" class="ml-4 border-l border-gray-200 hidden group-hover:block">
           <li class="px-4 py-1.5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Entri Capaian</li>
           <li><a href="entri-pkp1.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Klaster 1</a></li>
           <li><a href="entri-pkp2.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Klaster 2</a></li>
@@ -43,7 +53,7 @@
     </ul>
   </nav>
 
-  <div class="ml-64 flex flex-col min-h-screen">
+  <div class="md:ml-64 flex flex-col min-h-screen pt-14 md:pt-0">
     <main class="flex-grow p-4 md:p-8">
       <div class="bg-white rounded-xl shadow p-6 md:p-8">
         <div class="flex items-center gap-3 mb-4">
@@ -111,5 +121,40 @@
       }
     })();
   </script>
+  <script>
+    (function() {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const overlay = document.getElementById('sidebarOverlay');
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+      toggle && toggle.addEventListener('click', openSidebar);
+      overlay && overlay.addEventListener('click', closeSidebar);
+      // Tutup sidebar otomatis saat link menu mobile diklik
+      sidebar && sidebar.querySelectorAll('a').forEach(function(a) {
+        if (a.id === 'pkpToggle') return; // jangan tutup sidebar, ini cuma toggle submenu
+        a.addEventListener('click', closeSidebar);
+      });
+
+      // Toggle submenu PKP dengan tap (selain hover di desktop)
+      const pkpToggle = document.getElementById('pkpToggle');
+      const pkpSubmenu = document.getElementById('pkpSubmenu');
+      const pkpChevron = document.getElementById('pkpChevron');
+      if (pkpToggle && pkpSubmenu) {
+        pkpToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          pkpSubmenu.classList.toggle('submenu-open');
+          pkpChevron && pkpChevron.classList.toggle('rotate-180');
+        });
+      }
+    })();
+  </script>
+
 </body>
 </html>
