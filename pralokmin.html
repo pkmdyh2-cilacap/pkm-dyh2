@@ -225,7 +225,7 @@
         formData.append('lampiran', document.getElementById('fileLampiran').files[0]);
 
         try {
-          const response = await fetch('https://databank-pkm.onrender.com/api/upload', {
+          const response = await fetch('https://pkm-dyh2.onrender.com/api/upload', {
             method: 'POST',
             body: formData
           });
