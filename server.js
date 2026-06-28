@@ -33,7 +33,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; " +
     "font-src 'self' https://cdnjs.cloudflare.com; " +
     "img-src 'self' data: https://*.supabase.co; " +
-    "connect-src 'self' https://prxmtxqngcapzqttljpd.supabase.co; " +
+    "connect-src 'self' " + (process.env.SUPABASE_URL || 'https://prxmtxqngcapzqttljpd.supabase.co') + "; " +
     "worker-src 'self'; " +
     "frame-src 'none'"
   );
