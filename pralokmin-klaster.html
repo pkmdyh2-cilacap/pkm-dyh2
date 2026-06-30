@@ -75,6 +75,10 @@
       </div>
 
       <div class="overflow-x-auto">
+        <div id="loadingIndicator" class="hidden flex flex-col items-center justify-center py-12">
+          <i class="fas fa-spinner fa-spin text-emerald-600 text-3xl"></i>
+          <p class="text-gray-500 mt-3 text-sm">Memuat data...</p>
+        </div>
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
@@ -146,10 +150,26 @@
 
       const API_BASE = 'https://pkm-dyh2.onrender.com';
 
+      async function fetchWithRetry(url, options = {}, retries = 3) {
+        for (let i = 0; i < retries; i++) {
+          try {
+            const res = await fetch(url, options);
+            if (res.ok) return res;
+          } catch (err) {
+            if (i === retries - 1) throw err;
+            await new Promise(r => setTimeout(r, 3000));
+          }
+        }
+      }
+
       // ---------- RENDER TABEL ----------
       async function renderTable(month) {
+        const loadingEl = document.getElementById('loadingIndicator');
+        const table = document.querySelector('.overflow-x-auto table');
+        loadingEl.classList.remove('hidden');
+        if (table) table.classList.add('hidden');
         try {
-          const response = await fetch(`${API_BASE}/api/status/${month}`);
+          const response = await fetchWithRetry(`${API_BASE}/api/status/${month}`);
           if (!response.ok) throw new Error('Gagal ambil status');
           const data = await response.json();
 
@@ -199,6 +219,9 @@
           tbody.innerHTML = html;
         } catch (err) {
           alert('Gagal memuat status: ' + err.message);
+        } finally {
+          loadingEl.classList.add('hidden');
+          if (table) table.classList.remove('hidden');
         }
       }
 
@@ -245,12 +268,13 @@
 
       // ---------- MODAL FUNCTIONS ----------
       async function showFileDetail(bulan, klaster) {
+        const content = document.getElementById('fileDetailContent');
+        content.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-emerald-600 text-2xl"></i><p class="text-gray-500 mt-2 text-sm">Memuat detail...</p></div>';
         try {
-          const response = await fetch(`${API_BASE}/api/files/${bulan}/${klaster}`);
+          const response = await fetchWithRetry(`${API_BASE}/api/files/${bulan}/${klaster}`);
           if (!response.ok) throw new Error('Gagal ambil detail');
           const files = await response.json();
           
-          const content = document.getElementById('fileDetailContent');
           if (files.length === 0) {
             content.innerHTML = '<p class="text-gray-500">Belum ada file diupload.</p>';
             document.getElementById('editFileBtn').style.display = 'none';
@@ -292,11 +316,11 @@
 
       async function deleteAllFiles(bulan, klaster) {
         try {
-          const response = await fetch(`${API_BASE}/api/files/${bulan}/${klaster}`);
+          const response = await fetchWithRetry(`${API_BASE}/api/files/${bulan}/${klaster}`);
           if (!response.ok) throw new Error('Gagal ambil daftar file');
           const files = await response.json();
           for (const f of files) {
-            const delResp = await fetch(`${API_BASE}/api/file/${bulan}/${klaster}/${f.jenis}`, { method: 'DELETE' });
+            const delResp = await fetchWithRetry(`${API_BASE}/api/file/${bulan}/${klaster}/${f.jenis}`, { method: 'DELETE' });
             if (!delResp.ok) {
               console.error('Gagal hapus file', f.jenis);
             }

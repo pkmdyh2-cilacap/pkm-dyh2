@@ -77,6 +77,10 @@
       <button class="px-4 py-2.5 rounded-lg text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300" id="btnResetCari">Hapus Pencarian</button>
     </div>
     <div class="overflow-x-auto">
+      <div id="loadingIndicator" class="hidden flex flex-col items-center justify-center py-12">
+        <i class="fas fa-spinner fa-spin text-emerald-600 text-3xl"></i>
+        <p class="text-gray-500 mt-3 text-sm">Memuat data...</p>
+      </div>
       <table class="w-full text-sm">
         <thead>
           <tr>
@@ -103,6 +107,18 @@
 <script>
 const API = 'https://pkm-dyh2.onrender.com/api';
 const $ = id => document.getElementById(id);
+
+async function fetchWithRetry(url, options = {}, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url, options);
+      if (res.ok) return res;
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(r => setTimeout(r, 3000));
+    }
+  }
+}
 
 const BULAN_NAMA = ["", "Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
 
@@ -138,7 +154,7 @@ async function muatDataKlaster(klaster) {
 }
 
 async function api(path, opts = {}) {
-  const res = await fetch(API + path, {
+  const res = await fetchWithRetry(API + path, {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
@@ -266,7 +282,17 @@ $("cari").oninput = () => { halamanTabel = 1; renderTabel(); };
   $("filterSampai").value = `${thn}-${bln}`;
   $("filterDari").value = `${thn}-01`;
 
-  dataCache = await muatSemuaData();
+  const loadingEl = document.getElementById('loadingIndicator');
+  const table = document.querySelector('.overflow-x-auto table');
+  loadingEl.classList.remove('hidden');
+  if (table) table.classList.add('hidden');
+  $("empty").style.display = 'none';
+  try {
+    dataCache = await muatSemuaData();
+  } finally {
+    loadingEl.classList.add('hidden');
+    if (table) table.classList.remove('hidden');
+  }
   renderTabel();
 })();
 </script>
