@@ -48,10 +48,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(rootPath, 'index.html'));
 });
 
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
 // Inisialisasi Supabase client
 const supabase = createClient(
   process.env.SUPABASE_URL,
