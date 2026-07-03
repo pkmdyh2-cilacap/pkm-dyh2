@@ -7,6 +7,7 @@
   <title>Dokumen Pralokmin</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     @media (max-width:640px){button,a{min-height:44px;display:inline-flex;align-items:center}.container{padding-left:.75rem;padding-right:.75rem}}
   </style>
@@ -183,6 +184,7 @@
 
       form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        const API_BASE = window.location.origin;
 
         if (!bulanTahun.value) { alert('Pilih Bulan & Tahun.'); bulanTahun.focus(); return; }
 
@@ -218,35 +220,59 @@
           return;
         }
 
-        // Siapkan FormData untuk dikirim ke API
-        const formData = new FormData();
-        formData.append('bulan', bulanTahun.value);
-        formData.append('klaster', klaster);
-        formData.append('undangan', document.getElementById('fileUndangan').files[0]);
-        formData.append('notulen', document.getElementById('fileNotulen').files[0]);
-        formData.append('daftar_hadir', document.getElementById('fileDaftarHadir').files[0]);
-        formData.append('lampiran', document.getElementById('fileLampiran').files[0]);
-
         try {
-          const response = await fetch('https://pkm-dyh2.onrender.com/api/upload', {
-            method: 'POST',
-            body: formData
-          });
-          const result = await response.json();
-          if (result.success) {
-            alert(`✅ Data Klaster ${klaster} untuk ${bulanTahun.value} berhasil disimpan!`);
-            form.reset();
-            // Set bulan ke sekarang
-            const now = new Date();
-            bulanTahun.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-            // Sembunyikan info
-            uploads.forEach(u => {
-              document.getElementById(u.infoId).classList.add('hidden');
-              document.getElementById(u.errorId).classList.add('hidden');
+          // Ambil konfigurasi Supabase
+          const configResp = await fetch(API_BASE + '/api/config');
+          const config = await configResp.json();
+          const supabaseClient = supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
+          const bucketName = 'pralokmin-files';
+          const bulan = bulanTahun.value;
+
+          // Upload setiap file ke Supabase Storage langsung dari browser
+          for (const u of uploads) {
+            const input = document.getElementById(u.id);
+            const file = input.files[0];
+            const fileExt = file.name.substring(file.name.lastIndexOf('.'));
+            const baseName = file.name.substring(0, file.name.lastIndexOf('.'));
+            const uniqueName = baseName + '_' + Date.now() + fileExt;
+            const storagePath = bulan + '/klaster' + klaster + '/' + u.key + '/' + uniqueName;
+
+            const { error: uploadError } = await supabaseClient.storage
+              .from(bucketName)
+              .upload(storagePath, file, {
+                contentType: file.type,
+                cacheControl: '3600',
+                upsert: true
+              });
+
+            if (uploadError) throw new Error('Gagal upload ' + u.key + ': ' + uploadError.message);
+
+            // Simpan metadata
+            const metaResp = await fetch(API_BASE + '/api/upload-metadata', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                bulan: bulan,
+                klaster: parseInt(klaster),
+                jenis: u.key,
+                nama_file: file.name,
+                storage_path: storagePath,
+                ukuran: file.size
+              })
             });
-          } else {
-            alert('❌ Gagal upload: ' + result.error);
+
+            const metaResult = await metaResp.json();
+            if (!metaResult.success) throw new Error('Gagal simpan metadata ' + u.key + ': ' + metaResult.error);
           }
+
+          alert('✅ Data Klaster ' + klaster + ' untuk ' + bulan + ' berhasil disimpan!');
+          form.reset();
+          const now = new Date();
+          bulanTahun.value = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+          uploads.forEach(u => {
+            document.getElementById(u.infoId).classList.add('hidden');
+            document.getElementById(u.errorId).classList.add('hidden');
+          });
         } catch (err) {
           alert('❌ Error: ' + err.message);
         }
