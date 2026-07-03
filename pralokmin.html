@@ -111,7 +111,7 @@
           <div class="flex flex-col items-center justify-center pointer-events-none">
             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-1"></i>
             <p class="text-gray-600 font-medium text-sm">Klik atau seret file PDF</p>
-            <p class="text-xs text-gray-400">Maksimal 5 MB</p>
+            <p class="text-xs text-gray-400">Maksimal 10 MB</p>
           </div>
         </div>
         <div id="errorLampiran" class="text-sm text-red-600 mt-2 hidden"></div>
@@ -147,7 +147,7 @@
         { id: 'fileLampiran', errorId: 'errorLampiran', infoId: 'infoLampiran', key: 'lampiran' }
       ];
 
-      function validateFile(input, errorEl, infoEl) {
+      function validateFile(input, errorEl, infoEl, key) {
         const file = input.files[0];
         errorEl.classList.add('hidden');
         infoEl.classList.add('hidden');
@@ -161,8 +161,10 @@
           input.value = '';
           return false;
         }
-        if (file.size > 5 * 1024 * 1024) {
-          errorEl.textContent = '❌ Ukuran file maksimal 5 MB.';
+        const maxSize = key === 'lampiran' ? 10 * 1024 * 1024 : 5 * 1024 * 1024;
+        const maxSizeLabel = key === 'lampiran' ? '10 MB' : '5 MB';
+        if (file.size > maxSize) {
+          errorEl.textContent = `❌ Ukuran file maksimal ${maxSizeLabel}.`;
           errorEl.classList.remove('hidden');
           input.value = '';
           return false;
@@ -176,7 +178,7 @@
         const input = document.getElementById(u.id);
         const err = document.getElementById(u.errorId);
         const info = document.getElementById(u.infoId);
-        input.addEventListener('change', () => validateFile(input, err, info));
+        input.addEventListener('change', () => validateFile(input, err, info, u.key));
       });
 
       form.addEventListener('submit', async function(e) {
@@ -200,7 +202,7 @@
           const input = document.getElementById(u.id);
           const err = document.getElementById(u.errorId);
           const info = document.getElementById(u.infoId);
-          const valid = validateFile(input, err, info);
+          const valid = validateFile(input, err, info, u.key);
           if (!valid) { allValid = false; if (!firstInvalid) firstInvalid = input; }
           if (!input.files || input.files.length === 0) {
             allValid = false;
@@ -211,7 +213,7 @@
         }
 
         if (!allValid) {
-          alert('Lengkapi semua upload dengan PDF (max 5 MB).');
+          alert('Lengkapi semua upload dengan PDF (max 5 MB, Lampiran max 10 MB).');
           if (firstInvalid) firstInvalid.focus();
           return;
         }
