@@ -148,7 +148,7 @@
       const defaultMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
       monthPicker.value = defaultMonth;
 
-      const API_BASE = window.location.origin;
+      const API_BASE = 'https://pkm-dyh2.onrender.com';
 
       async function fetchWithRetry(url, options = {}, retries = 3) {
         for (let i = 0; i < retries; i++) {

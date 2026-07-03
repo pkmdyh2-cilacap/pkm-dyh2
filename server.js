@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const { createClient } = require('@supabase/supabase-js');
+const multer = require('multer');
 const path = require('path');
 const JSZip = require('jszip');
 const { v4: uuidv4 } = require('uuid');
@@ -209,30 +210,79 @@ async function cekKoneksi() {
 
 cekKoneksi();
 
-// ---------- ENDPOINT SIMPAN METADATA FILE ----------
-// File diupload langsung dari browser ke Supabase Storage,
-// endpoint ini hanya menyimpan metadata-nya
-app.post('/api/upload-metadata', async (req, res) => {
+// Konfigurasi multer (memory storage)
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf' || file.originalname.endsWith('.pdf')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file PDF'), false);
+    }
+  }
+}).fields([
+  { name: 'undangan', maxCount: 1 },
+  { name: 'notulen', maxCount: 1 },
+  { name: 'daftar_hadir', maxCount: 1 },
+  { name: 'lampiran', maxCount: 1 }
+]);
+
+// ---------- ENDPOINT UPLOAD ----------
+app.post('/api/upload', upload, async (req, res) => {
   try {
-    const { bulan, klaster, jenis, nama_file, storage_path, ukuran } = req.body;
-    if (!bulan || !klaster || !jenis || !nama_file || !storage_path) {
-      return res.status(400).json({ success: false, error: 'Data metadata tidak lengkap' });
+    const { bulan, klaster } = req.body;
+    if (!bulan || !klaster) {
+      return res.status(400).json({ success: false, error: 'Bulan dan Klaster wajib diisi' });
     }
 
-    const { error: insertError } = await supabaseAdmin
-      .from('pralokmin_files')
-      .upsert({
-        bulan,
-        klaster: parseInt(klaster),
-        jenis,
-        nama_file,
-        storage_path,
-        ukuran: ukuran || 0
-      }, { onConflict: 'bulan, klaster, jenis' });
+    const files = req.files;
+    const jenisMap = { undangan: 'undangan', notulen: 'notulen', daftar_hadir: 'daftar_hadir', lampiran: 'lampiran' };
+    const bucketName = 'pralokmin-files';
 
-    if (insertError) throw insertError;
+    for (const [key, fileArray] of Object.entries(files)) {
+      const jenis = jenisMap[key];
+      if (!jenis) continue;
+      const file = fileArray[0];
 
-    res.json({ success: true, message: 'Metadata berhasil disimpan' });
+      const fileExt = path.extname(file.originalname);
+      const baseName = path.basename(file.originalname, fileExt);
+      const uniqueName = `${baseName}_${Date.now()}${fileExt}`;
+      const storagePath = `${bulan}/klaster${klaster}/${jenis}/${uniqueName}`;
+
+      // Upload ke Supabase Storage (pakai admin key)
+      const { error: uploadError } = await supabaseAdmin.storage
+        .from(bucketName)
+        .upload(storagePath, file.buffer, {
+          contentType: file.mimetype,
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) {
+        throw new Error(`Gagal upload ${jenis}: ${uploadError.message}`);
+      }
+
+      // Simpan metadata ke tabel (pakai admin key)
+      const { error: insertError } = await supabaseAdmin
+        .from('pralokmin_files')
+        .upsert({
+          bulan,
+          klaster: parseInt(klaster),
+          jenis,
+          nama_file: file.originalname,
+          storage_path: storagePath,
+          ukuran: file.size
+        }, { onConflict: 'bulan, klaster, jenis' });
+
+      if (insertError) {
+        await supabaseAdmin.storage.from(bucketName).remove([storagePath]);
+        throw new Error(`Gagal simpan metadata ${jenis}: ${insertError.message}`);
+      }
+    }
+
+    res.json({ success: true, message: 'Upload berhasil' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, error: err.message });
@@ -636,14 +686,6 @@ app.delete('/api/entries/:id', async (req, res) => {
   }
 });
 
-// ---------- ENDPOINT KONFIGURASI UNTUK CLIENT ----------
-app.get('/api/config', (req, res) => {
-  res.json({
-    supabaseUrl: process.env.SUPABASE_URL,
-    supabaseAnonKey: process.env.SUPABASE_ANON_KEY
-  });
-});
-
 // ===================== DASHBOARD =====================
 app.get('/api/dashboard', async (req, res) => {
   try {
@@ -671,11 +713,7 @@ app.get('/api/dashboard', async (req, res) => {
 });
 
 // ---------- START SERVER ----------
-if (process.env.VERCEL !== '1') {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server berjalan di http://0.0.0.0:${PORT}`);
-    console.log(`🔗 Supabase URL: ${process.env.SUPABASE_URL}`);
-  });
-}
-
-module.exports = app;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server berjalan di http://0.0.0.0:${PORT}`);
+  console.log(`🔗 Supabase URL: ${process.env.SUPABASE_URL}`);
+});
