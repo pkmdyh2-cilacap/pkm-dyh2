@@ -389,24 +389,38 @@ app.get('/api/download/:bulan', async (req, res) => {
     }
 
     const zip = new JSZip();
+    let gagalList = [];
 
     for (const row of data) {
-      const { data: fileData, error: downloadError } = await supabase.storage
+      const { data: fileData, error: downloadError } = await supabaseAdmin.storage
         .from(bucketName)
         .download(row.storage_path);
 
       if (downloadError) {
         console.error('Gagal download file:', row.storage_path, downloadError);
+        gagalList.push(row.nama_file);
         continue;
       }
 
       const folderName = `Klaster_${row.klaster}`;
-      zip.folder(folderName).file(row.nama_file, fileData);
+      const buffer = Buffer.from(await fileData.arrayBuffer());
+      zip.folder(folderName).file(row.nama_file, buffer);
     }
 
-    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+    if (Object.keys(zip.files).length === 0) {
+      return res.status(500).json({ error: 'Tidak ada file yang berhasil diambil dari storage.', gagal: gagalList });
+    }
+
+    const zipBuffer = await zip.generateAsync({
+      type: 'nodebuffer',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 }
+    });
     res.set('Content-Type', 'application/zip');
     res.set('Content-Disposition', `attachment; filename=Pralokmin_${bulan}.zip`);
+    if (gagalList.length > 0) {
+      res.set('X-Gagal-Files', encodeURIComponent(gagalList.join(', ')));
+    }
     res.send(zipBuffer);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -431,23 +445,37 @@ app.get('/api/download-klaster/:bulan/:klaster', async (req, res) => {
     }
 
     const zip = new JSZip();
+    let gagalList = [];
     for (const row of data) {
-      const { data: fileData, error: downloadError } = await supabase.storage
+      const { data: fileData, error: downloadError } = await supabaseAdmin.storage
         .from(bucketName)
         .download(row.storage_path);
 
       if (downloadError) {
         console.error('Gagal download:', row.storage_path, downloadError);
+        gagalList.push(row.nama_file);
         continue;
       }
 
       const jenisLabel = { undangan: 'Undangan', notulen: 'Notulen', daftar_hadir: 'Daftar Hadir', lampiran: 'Lampiran' }[row.jenis] || row.jenis;
-      zip.file(`${jenisLabel}_${row.nama_file}`, fileData);
+      const buffer = Buffer.from(await fileData.arrayBuffer());
+      zip.file(`${jenisLabel}_${row.nama_file}`, buffer);
     }
 
-    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+    if (Object.keys(zip.files).length === 0) {
+      return res.status(500).json({ error: 'Tidak ada file yang berhasil diambil dari storage.', gagal: gagalList });
+    }
+
+    const zipBuffer = await zip.generateAsync({
+      type: 'nodebuffer',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 }
+    });
     res.set('Content-Type', 'application/zip');
     res.set('Content-Disposition', `attachment; filename=Pralokmin_Klaster${klaster}_${bulan}.zip`);
+    if (gagalList.length > 0) {
+      res.set('X-Gagal-Files', encodeURIComponent(gagalList.join(', ')));
+    }
     res.send(zipBuffer);
   } catch (err) {
     res.status(500).json({ error: err.message });
