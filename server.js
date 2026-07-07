@@ -27,16 +27,18 @@ app.use(express.json());
 
 // Set CSP header agar tidak diblokir Render
 app.use((req, res, next) => {
-  res.setHeader('Content-Security-Policy',
+  res.setHeader(
+    "Content-Security-Policy",
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; " +
     "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; " +
     "font-src 'self' https://cdnjs.cloudflare.com; " +
     "img-src 'self' data: https://*.supabase.co; " +
-    "connect-src 'self' " + (process.env.SUPABASE_URL || 'https://prxmtxqngcapzqttljpd.supabase.co') + "; " +
+    "connect-src 'self' https://pkm-dyh2.onrender.com https://prxmtxqngcapzqttljpd.supabase.co; " +
     "worker-src 'self'; " +
-    "frame-src 'none'"
+    "frame-src 'none';"
   );
+
   next();
 });
 
