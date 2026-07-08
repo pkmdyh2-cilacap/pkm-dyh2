@@ -4,7 +4,6 @@ const { createClient } = require('@supabase/supabase-js');
 const multer = require('multer');
 const path = require('path');
 const JSZip = require('jszip');
-const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
 
 // Inisialisasi app
@@ -12,15 +11,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-const allowedOrigins = process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost';
 app.use(cors({
   origin: function(origin, callback) {
     if (!origin) return callback(null, true);
-    const origins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost').split(',');
+    const origins = (process.env.CORS_ORIGIN || 'http://localhost:3000,http://localhost').split(',').map(s => s.trim());
     if (origins.indexOf(origin) !== -1 || process.env.CORS_ORIGIN === '*') {
       return callback(null, true);
     }
-    callback(null, true); // allow all in dev
+    callback(null, true);
   }
 }));
 app.use(express.json());
@@ -34,7 +32,7 @@ app.use((req, res, next) => {
     "style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; " +
     "font-src 'self' https://cdnjs.cloudflare.com; " +
     "img-src 'self' data: https://*.supabase.co; " +
-    "connect-src 'self' https://pkm-dyh2.onrender.com https://prxmtxqngcapzqttljpd.supabase.co; " +
+    "connect-src 'self' https://prxmtxqngcapzqttljpd.supabase.co; " +
     "worker-src 'self'; " +
     "frame-src 'none';"
   );
@@ -42,8 +40,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Sajikan frontend statis (HTML di root project, bukan di subfolder frontend/)
-const rootPath = __dirname;  // server.js di root project
+// Sajikan frontend statis dari folder public/
+const rootPath = path.join(__dirname, 'public');
 app.use(express.static(rootPath));
 
 // Fallback: kirim index.html untuk root path jika static gagal
@@ -61,104 +59,7 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
-// Cek koneksi Supabase dan buat tabel jika belum ada
-const SQL_CREATE_TABLES = `
-  CREATE TABLE IF NOT EXISTS units (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    klaster BIGINT NOT NULL DEFAULT 5,
-    nama TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-  );
-  CREATE TABLE IF NOT EXISTS indicators (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    klaster BIGINT NOT NULL DEFAULT 5,
-    unit TEXT NOT NULL,
-    nama TEXT NOT NULL,
-    target TEXT NOT NULL,
-    satuan TEXT DEFAULT 'persen',
-    mode_bulanan TEXT DEFAULT 'bagi12',
-    bor BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-  );
-  CREATE TABLE IF NOT EXISTS entries (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    klaster BIGINT NOT NULL DEFAULT 5,
-    indikator_id BIGINT NOT NULL,
-    petugas TEXT NOT NULL,
-    unit TEXT NOT NULL,
-    bulan TEXT NOT NULL,
-    tahun TEXT NOT NULL,
-    periode TEXT NOT NULL,
-    indikator_nama TEXT NOT NULL,
-    target_tahunan TEXT,
-    mode_bulanan TEXT DEFAULT 'bagi12',
-    target_bulanan DOUBLE PRECISION,
-    aktual TEXT,
-    satuan TEXT DEFAULT 'persen',
-    status_capaian TEXT,
-    analisa TEXT,
-    rtl TEXT,
-    bor BOOLEAN DEFAULT FALSE,
-    bor_hari_rawat DOUBLE PRECISION DEFAULT 0,
-    bor_tt DOUBLE PRECISION DEFAULT 0,
-    bor_hari_periode DOUBLE PRECISION DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-  );
-  CREATE TABLE IF NOT EXISTS pralokmin_files (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    bulan TEXT NOT NULL,
-    klaster BIGINT NOT NULL,
-    jenis TEXT NOT NULL,
-    nama_file TEXT NOT NULL,
-    storage_path TEXT NOT NULL,
-    ukuran BIGINT NOT NULL DEFAULT 0,
-    diupload_pada TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    CONSTRAINT unique_bulan_klaster_jenis UNIQUE (bulan, klaster, jenis)
-  );
-  ALTER TABLE units ENABLE ROW LEVEL SECURITY;
-  ALTER TABLE indicators ENABLE ROW LEVEL SECURITY;
-  ALTER TABLE entries ENABLE ROW LEVEL SECURITY;
-  ALTER TABLE pralokmin_files ENABLE ROW LEVEL SECURITY;
-  DO $$ BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'units' AND policyname = 'Akses publik units') THEN
-      CREATE POLICY "Akses publik units" ON units FOR ALL USING (true) WITH CHECK (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'indicators' AND policyname = 'Akses publik indicators') THEN
-      CREATE POLICY "Akses publik indicators" ON indicators FOR ALL USING (true) WITH CHECK (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'entries' AND policyname = 'Akses publik entries') THEN
-      CREATE POLICY "Akses publik entries" ON entries FOR ALL USING (true) WITH CHECK (true);
-    END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'pralokmin_files' AND policyname = 'Akses publik pralokmin_files') THEN
-      CREATE POLICY "Akses publik pralokmin_files" ON pralokmin_files FOR ALL USING (true) WITH CHECK (true);
-    END IF;
-  END $$;
-`;
-
 async function inisialisasiDatabase() {
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY;
-  if (serviceKey) {
-    try {
-      const response = await fetch(`${process.env.SUPABASE_URL}/sql`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${serviceKey}`
-        },
-        body: JSON.stringify({ query: SQL_CREATE_TABLES })
-      });
-      if (response.ok) {
-        console.log('✅ Tabel units, indicators, entries, pralokmin_files berhasil dibuat');
-        return;
-      }
-      console.warn('⚠️ Gagal membuat tabel via SQL endpoint, fallback ke cek manual');
-    } catch {
-      console.warn('⚠️ Gagal membuat tabel via SQL endpoint');
-    }
-  }
-
-  // Cek manual
   const tabel = ['units', 'indicators', 'entries', 'pralokmin_files'];
   for (const t of tabel) {
     try {
@@ -166,8 +67,7 @@ async function inisialisasiDatabase() {
       if (error) throw error;
     } catch {
       console.warn(`⚠️  Tabel "${t}" belum ada.`);
-      console.warn('   >>> Jalankan SQL di backend/migration.sql melalui Supabase SQL Editor <<<');
-      console.warn('   >>> Atau tambahkan SUPABASE_SERVICE_KEY=... ke .env agar otomatis dibuat <<<');
+      console.warn('   >>> Jalankan SQL di sql/migration.sql melalui Supabase SQL Editor <<<');
       return;
     }
   }
@@ -239,9 +139,13 @@ app.post('/api/upload', upload, async (req, res) => {
       return res.status(400).json({ success: false, error: 'Bulan dan Klaster wajib diisi' });
     }
 
-    const files = req.files;
+    const files = req.files || {};
     const jenisMap = { undangan: 'undangan', notulen: 'notulen', daftar_hadir: 'daftar_hadir', lampiran: 'lampiran' };
     const bucketName = 'pralokmin-files';
+
+    if (Object.keys(files).length === 0) {
+      return res.status(400).json({ success: false, error: 'Tidak ada file yang diupload' });
+    }
 
     for (const [key, fileArray] of Object.entries(files)) {
       const jenis = jenisMap[key];
@@ -617,12 +521,12 @@ app.delete('/api/indicators/:id', async (req, res) => {
 // ===================== CRUD ENTRIES =====================
 app.get('/api/entries', async (req, res) => {
   try {
-    const klaster = req.query.klaster || 5;
-    const { data, error } = await supabase
-      .from('entries')
-      .select('*')
-      .or(`klaster.eq.${klaster},klaster.is.null`)
-      .order('created_at', { ascending: false });
+    let query = supabase.from('entries').select('*');
+    const klaster = req.query.klaster;
+    if (klaster) {
+      query = query.or(`klaster.eq.${klaster},klaster.is.null`);
+    }
+    const { data, error } = await query.order('created_at', { ascending: false });
     if (error) throw error;
     const rows = (data || []).map(r => ({ ...r, bor: !!r.bor }));
     res.json(rows);
@@ -740,6 +644,21 @@ app.get('/api/dashboard', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
+});
+
+// ---------- ERROR HANDLER ----------
+app.use((err, req, res, next) => {
+  console.error('❌ Unhandled error:', err.message);
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ success: false, error: 'Ukuran file maksimal 5 MB' });
+    }
+    return res.status(400).json({ success: false, error: err.message });
+  }
+  if (err.message === 'Hanya file PDF') {
+    return res.status(400).json({ success: false, error: 'Hanya file PDF yang diperbolehkan' });
+  }
+  res.status(500).json({ success: false, error: err.message || 'Internal server error' });
 });
 
 // ---------- START SERVER ----------
