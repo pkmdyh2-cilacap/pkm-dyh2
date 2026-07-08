@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    @media (max-width:640px){.nav-link,button,.btn-like{min-height:44px;display:flex;align-items:center}.container{padding-left:.75rem;padding-right:.75rem}}
+    @media (max-width:640px){.nav-link,button,.btn-like,select,input,textarea,a{min-height:44px;display:flex;align-items:center}.container{padding-left:.75rem;padding-right:.75rem}table{font-size:0.75rem}th,td{padding:0.5rem 0.4rem!important;white-space:normal!important;word-break:break-word}h2{font-size:1.1rem!important}}
   .submenu-open{display:block!important}
   </style>
 </head>
@@ -30,6 +30,20 @@
     <ul class="py-2 text-sm font-medium text-gray-700">
       <li><a href="index.html" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-home w-5"></i> Home</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-users w-5"></i> Kepegawaian</a></li>
+      <li class="relative group">
+        <a href="#" id="mutuToggle" class="nav-link flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100">
+          <i class="fas fa-clipboard-check w-5"></i> Mutu <i id="mutuChevron" class="fas fa-chevron-down text-xs ml-auto transition-transform"></i>
+        </a>
+        <ul id="mutuSubmenu" class="ml-4 border-l border-gray-200 hidden group-hover:block">
+          <li><a href="mutu.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard Mutu</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Indikator Nasional Mutu</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keselamatan Pasien</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">PPI</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">MFK</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">K3</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manajemen Risiko</a></li>
+        </ul>
+      </li>
       <li><a href="pralokmin-klaster.html" class="nav-link active flex items-center gap-3 px-4 py-3 bg-emerald-100 text-emerald-700"><i class="fas fa-chart-pie w-5"></i> Pralokmin Klaster</a></li>
       <li class="relative group">
         <a href="#" id="pkpToggle" class="nav-link flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100">
@@ -51,16 +65,16 @@
   </nav>
 
   <div class="md:ml-64 flex flex-col min-h-screen pt-14 md:pt-0">
-    <main class="flex-grow p-4 md:p-6">
-    <div class="bg-white rounded-xl shadow p-6 md:p-8">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+    <main class="flex-grow p-3 md:p-6">
+    <div class="bg-white rounded-xl shadow p-4 md:p-8">
+        <div class="flex flex-wrap items-center justify-between gap-3 md:gap-4 mb-4 md:mb-6">
+        <h2 class="text-lg md:text-2xl font-bold text-gray-800 flex items-center gap-2">
           <i class="fas fa-chart-pie text-emerald-600"></i> Dashboard Pralokmin Klaster
         </h2>
         <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <label for="monthPicker" class="text-sm font-medium text-gray-600">Bulan:</label>
-          <input type="month" id="monthPicker" class="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
-          <button id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm transition w-full sm:w-auto">
+          <input type="month" id="monthPicker" class="w-full sm:w-auto px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500" />
+          <button id="refreshBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-lg text-sm transition w-full sm:w-auto">
             <i class="fas fa-sync-alt"></i> Tampilkan
           </button>
         </div>
@@ -68,7 +82,7 @@
 
       <!-- Tombol Download ZIP -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-4">
-        <button id="downloadZipBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+        <button id="downloadZipBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg text-sm transition flex items-center justify-center gap-2">
           <i class="fas fa-file-archive"></i> Download Semua File (ZIP)
         </button>
         <span id="zipStatus" class="text-sm text-gray-500"></span>
@@ -97,7 +111,7 @@
         <span><span class="inline-block w-3 h-3 bg-red-500 rounded-full"></span> Belum lengkap (merah)</span>
       </div>
       <div class="mt-4">
-        <a href="pralokmin.html" class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition text-sm w-full sm:w-auto">
+        <a href="pralokmin.html" class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg transition text-sm w-full sm:w-auto">
           <i class="fas fa-upload mr-1"></i> Upload Dokumen Pralokmin
         </a>
       </div>
@@ -438,7 +452,7 @@
       overlay && overlay.addEventListener('click', closeSidebar);
       // Tutup sidebar otomatis saat link menu mobile diklik
       sidebar && sidebar.querySelectorAll('a').forEach(function(a) {
-        if (a.id === 'pkpToggle') return; // jangan tutup sidebar, ini cuma toggle submenu
+        if (a.id === 'pkpToggle' || a.id === 'mutuToggle') return; // jangan tutup sidebar, ini cuma toggle submenu
         a.addEventListener('click', closeSidebar);
       });
 
@@ -451,6 +465,18 @@
           e.preventDefault();
           pkpSubmenu.classList.toggle('submenu-open');
           pkpChevron && pkpChevron.classList.toggle('rotate-180');
+        });
+      }
+
+      // Toggle submenu Mutu
+      const mutuToggle = document.getElementById('mutuToggle');
+      const mutuSubmenu = document.getElementById('mutuSubmenu');
+      const mutuChevron = document.getElementById('mutuChevron');
+      if (mutuToggle && mutuSubmenu) {
+        mutuToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          mutuSubmenu.classList.toggle('submenu-open');
+          mutuChevron && mutuChevron.classList.toggle('rotate-180');
         });
       }
     })();
