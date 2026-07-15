@@ -33,6 +33,20 @@
     <ul class="py-2 text-sm font-medium text-gray-700">
       <li><a href="index.html" class="nav-link active flex items-center gap-3 px-4 py-3 bg-emerald-100 text-emerald-700"><i class="fas fa-home w-5"></i> Home</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-users w-5"></i> Kepegawaian</a></li>
+      <li class="relative group">
+        <a href="#" id="mutuToggle" class="nav-link flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100">
+          <i class="fas fa-clipboard-check w-5"></i> Mutu <i id="mutuChevron" class="fas fa-chevron-down text-xs ml-auto transition-transform"></i>
+        </a>
+        <ul id="mutuSubmenu" class="ml-4 border-l border-gray-200 hidden group-hover:block">
+          <li><a href="mutu.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard Mutu</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Indikator Nasional Mutu</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Keselamatan Pasien</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">PPI</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">MFK</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">K3</a></li>
+          <li><a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Manajemen Risiko</a></li>
+        </ul>
+      </li>
       <li><a href="pralokmin-klaster.html" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-chart-pie w-5"></i> Pralokmin Klaster</a></li>
       <li class="relative group">
         <a href="#" id="pkpToggle" class="nav-link flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-100">
@@ -47,6 +61,7 @@
           <li><a href="entri-pkp5.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Klaster 5</a></li>
         </ul>
       </li>
+      <li><a href="yanlik.html" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-handshake w-5"></i> Pelayanan Publik</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-shield-alt w-5"></i> Zona Integritas</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-star w-5"></i> Akreditasi</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-check-circle w-5"></i> ISO 9001</a></li>
@@ -138,7 +153,7 @@
       overlay && overlay.addEventListener('click', closeSidebar);
       // Tutup sidebar otomatis saat link menu mobile diklik
       sidebar && sidebar.querySelectorAll('a').forEach(function(a) {
-        if (a.id === 'pkpToggle') return; // jangan tutup sidebar, ini cuma toggle submenu
+        if (a.id === 'pkpToggle' || a.id === 'mutuToggle') return; // jangan tutup sidebar, ini cuma toggle submenu
         a.addEventListener('click', closeSidebar);
       });
 
@@ -151,6 +166,17 @@
           e.preventDefault();
           pkpSubmenu.classList.toggle('submenu-open');
           pkpChevron && pkpChevron.classList.toggle('rotate-180');
+        });
+      }
+
+      const mutuToggle = document.getElementById('mutuToggle');
+      const mutuSubmenu = document.getElementById('mutuSubmenu');
+      const mutuChevron = document.getElementById('mutuChevron');
+      if (mutuToggle && mutuSubmenu) {
+        mutuToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          mutuSubmenu.classList.toggle('submenu-open');
+          mutuChevron && mutuChevron.classList.toggle('rotate-180');
         });
       }
     })();

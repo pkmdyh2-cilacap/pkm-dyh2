@@ -4,11 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="/favicon.png" type="image/png" />
-  <title>Mutu - Puskesmas Dayeuhluhur II</title>
+  <title>Yanlik - Puskesmas Dayeuhluhur II</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
-    @media (max-width:640px){.nav-link,button,.btn-like,select,input,textarea,a{min-height:44px;display:flex;align-items:center}.container{padding-left:.75rem;padding-right:.75rem}table{font-size:0.75rem}th,td{padding:0.5rem 0.4rem!important;white-space:normal!important;word-break:break-word}h2{font-size:1.1rem!important}}
+    @media (max-width: 640px) {
+      .nav-link, button, .btn-like { min-height:44px; display:flex; align-items:center; }
+      .container { padding-left:0.75rem; padding-right:0.75rem; }
+    }
   .submenu-open{display:block!important}
   </style>
 </head>
@@ -58,7 +61,7 @@
           <li><a href="entri-pkp5.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Klaster 5</a></li>
         </ul>
       </li>
-      <li><a href="yanlik.html" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-handshake w-5"></i> Pelayanan Publik</a></li>
+      <li><a href="yanlik.html" class="nav-link active flex items-center gap-3 px-4 py-3 bg-emerald-100 text-emerald-700"><i class="fas fa-handshake w-5"></i> Pelayanan Publik</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-shield-alt w-5"></i> Zona Integritas</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-star w-5"></i> Akreditasi</a></li>
       <li><a href="#" class="nav-link flex items-center gap-3 px-4 py-3 hover:bg-gray-100"><i class="fas fa-check-circle w-5"></i> ISO 9001</a></li>
@@ -66,51 +69,33 @@
   </nav>
 
   <div class="md:ml-64 flex flex-col min-h-screen pt-14 md:pt-0">
-    <main class="flex-grow p-3 md:p-8">
-      <div class="bg-white rounded-xl shadow p-4 md:p-8">
-          <div class="flex items-center gap-3 mb-3 md:mb-4">
-          <i class="fas fa-clipboard-check text-emerald-600 text-2xl md:text-3xl"></i>
-          <h2 class="text-lg md:text-2xl font-bold text-gray-800">Mutu</h2>
+    <main class="flex-grow p-4 md:p-8">
+      <div class="bg-white rounded-xl shadow p-6 md:p-8">
+        <div class="flex items-center gap-3 mb-4">
+          <i class="fas fa-handshake text-emerald-600 text-3xl"></i>
+          <h2 class="text-2xl font-bold text-gray-800">Pelayanan Publik (Yanlik)</h2>
         </div>
-        <p class="text-gray-600 text-sm md:text-base mb-3 md:mb-4">
-          Modul Mutu Puskesmas Dayeuhluhur II. Kelola indikator mutu, keselamatan pasien, PPI, MFK, K3, dan manajemen risiko.
+        <p class="text-gray-600 mb-4">
+          Halaman ini menampilkan informasi dan data terkait Pelayanan Publik di Puskesmas Dayeuhluhur II.
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
           <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
             <i class="fas fa-clipboard-list text-emerald-600 text-2xl mb-2"></i>
-            <h3 class="font-semibold">Indikator Nasional Mutu</h3>
-            <p class="text-sm text-gray-600">Capaian indikator mutu nasional puskesmas.</p>
-            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Kelola →</a>
+            <h3 class="font-semibold">Laporan Pelayanan</h3>
+            <p class="text-sm text-gray-600">Data laporan pelayanan publik per periode.</p>
+            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Lihat Laporan →</a>
           </div>
           <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
-            <i class="fas fa-heartbeat text-emerald-600 text-2xl mb-2"></i>
-            <h3 class="font-semibold">Keselamatan Pasien</h3>
-            <p class="text-sm text-gray-600">Program keselamatan pasien puskesmas.</p>
-            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Kelola →</a>
+            <i class="fas fa-upload text-emerald-600 text-2xl mb-2"></i>
+            <h3 class="font-semibold">Upload Dokumen</h3>
+            <p class="text-sm text-gray-600">Upload dokumen terkait pelayanan publik (Yanlik).</p>
+            <a href="pralokmin.html" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Upload →</a>
           </div>
-          <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
-            <i class="fas fa-shield-virus text-emerald-600 text-2xl mb-2"></i>
-            <h3 class="font-semibold">PPI</h3>
-            <p class="text-sm text-gray-600">Pencegahan dan pengendalian infeksi.</p>
-            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Kelola →</a>
-          </div>
-          <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
-            <i class="fas fa-tools text-emerald-600 text-2xl mb-2"></i>
-            <h3 class="font-semibold">MFK</h3>
-            <p class="text-sm text-gray-600">Manajemen fasilitas dan keselamatan.</p>
-            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Kelola →</a>
-          </div>
-          <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
-            <i class="fas fa-hard-hat text-emerald-600 text-2xl mb-2"></i>
-            <h3 class="font-semibold">K3</h3>
-            <p class="text-sm text-gray-600">Keselamatan dan kesehatan kerja.</p>
-            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Kelola →</a>
-          </div>
-          <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
-            <i class="fas fa-exclamation-triangle text-emerald-600 text-2xl mb-2"></i>
-            <h3 class="font-semibold">Manajemen Risiko</h3>
-            <p class="text-sm text-gray-600">Identifikasi dan pengendalian risiko.</p>
-            <a href="#" class="inline-block mt-2 text-emerald-600 hover:underline text-sm">Kelola →</a>
+          <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+            <i class="fas fa-file-export text-green-600 text-2xl mb-2"></i>
+            <h3 class="font-semibold">Unduh Dokumen</h3>
+            <p class="text-sm text-gray-600">Unduh dokumen terkait pelayanan publik.</p>
+            <a href="#" class="inline-block mt-2 text-green-600 hover:underline text-sm">Unduh →</a>
           </div>
         </div>
       </div>
@@ -158,7 +143,6 @@
         if (a.id === 'pkpToggle' || a.id === 'mutuToggle') return;
         a.addEventListener('click', closeSidebar);
       });
-
       const pkpToggle = document.getElementById('pkpToggle');
       const pkpSubmenu = document.getElementById('pkpSubmenu');
       const pkpChevron = document.getElementById('pkpChevron');
@@ -169,7 +153,37 @@
           pkpChevron && pkpChevron.classList.toggle('rotate-180');
         });
       }
-
+    })();
+  </script>
+  <script>
+    (function() {
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebarToggle');
+      const overlay = document.getElementById('sidebarOverlay');
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+      toggle && toggle.addEventListener('click', openSidebar);
+      overlay && overlay.addEventListener('click', closeSidebar);
+      sidebar && sidebar.querySelectorAll('a').forEach(function(a) {
+        if (a.id === 'pkpToggle' || a.id === 'mutuToggle') return;
+        a.addEventListener('click', closeSidebar);
+      });
+      const pkpToggle = document.getElementById('pkpToggle');
+      const pkpSubmenu = document.getElementById('pkpSubmenu');
+      const pkpChevron = document.getElementById('pkpChevron');
+      if (pkpToggle && pkpSubmenu) {
+        pkpToggle.addEventListener('click', function(e) {
+          e.preventDefault();
+          pkpSubmenu.classList.toggle('submenu-open');
+          pkpChevron && pkpChevron.classList.toggle('rotate-180');
+        });
+      }
       const mutuToggle = document.getElementById('mutuToggle');
       const mutuSubmenu = document.getElementById('mutuSubmenu');
       const mutuChevron = document.getElementById('mutuChevron');
