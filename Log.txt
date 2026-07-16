@@ -140,3 +140,18 @@ Format: [YYYY-MM-DD HH:MM] - Deskripsi singkat
                   public/entri-pkp4.html, public/entri-pkp5.html,
                   public/kelola-indikator.html, public/pralokmin.html,
                   public/pralokmin-klaster.html
+
+[2026-07-17 10:00] - Setup frontend E2E test (Playwright) + update dokumentasi
+  Perubahan:
+    - Install Playwright + Chromium untuk E2E testing
+    - Buat static file server untuk isolasi test (tanpa dependensi Supabase)
+    - Buat 3 test suite E2E (42 test):
+      * login.spec.js — login flow, redirect, logout (7 test)
+      * navigation.spec.js — sidebar active link, submenu, tombol logout (17 test)
+      * pages.spec.js — smoke test semua halaman + 404 (18 test)
+    - Update PANDUAN.md §10 — tambah E2E test steps
+    - Update TEST.md §9 — dokumentasi E2E Playwright lengkap
+    - Update REKOMENDASI.md — status E2E ✅ + skenario lanjutan
+    - Update package.json — script test:e2e, ignore e2e/ dari Jest
+  File terdampak: __tests__/e2e/ (5 file), PANDUAN.md, TEST.md,
+                  REKOMENDASI.md, package.json

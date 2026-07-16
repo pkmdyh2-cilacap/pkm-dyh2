@@ -20,7 +20,9 @@ npm install --save-dev jest supertest
   "dev": "nodemon server.js",
   "test": "jest --forceExit --detectOpenHandles",
   "test:watch": "jest --watch",
-  "test:coverage": "jest --coverage"
+  "test:coverage": "jest --coverage",
+  "test:e2e": "playwright test --config __tests__/e2e/playwright.config.js",
+  "test:e2e:ui": "playwright test --config __tests__/e2e/playwright.config.js --ui"
 }
 ```
 
@@ -38,6 +40,11 @@ pkm-dyh2/
 │   │   ├── dashboard.test.js
 │   │   ├── upload.test.js
 │   │   └── files.test.js
+│   ├── e2e/
+│   │   ├── playwright.config.js  # Konfigurasi Playwright
+│   │   ├── login.spec.js         # E2E: login/logout flow
+│   │   ├── navigation.spec.js    # E2E: sidebar, active link, submenu
+│   │   └── pages.spec.js         # E2E: smoke test tiap halaman
 │   └── helpers/
 │       └── supabase-mock.js  # Helper mock data Supabase
 ```
@@ -190,7 +197,7 @@ process.env.PORT = '0';
 ## 5. Menjalankan Test
 
 ```bash
-# Semua test
+# Backend unit & integration tests
 npm test
 
 # Watch mode
@@ -198,6 +205,14 @@ npm run test:watch
 
 # Dengan coverage
 npm run test:coverage
+
+# E2E frontend tests (butuh server berjalan)
+npm run dev &
+npm run test:e2e
+kill %1
+
+# Mutation testing
+npx stryker run
 ```
 
 ---
@@ -277,7 +292,92 @@ describe('GET /api/units', () => {
 
 ---
 
-## 9. Rekomendasi Pengembangan Testing
+## 9. E2E Frontend Testing (Playwright)
+
+E2E test menggunakan **Playwright** untuk memvalidasi halaman frontend secara nyata di browser.
+
+### 9.1 Setup Playwright
+
+```bash
+npm install --save-dev @playwright/test
+npx playwright install chromium
+```
+
+### 9.2 Struktur Test
+
+```
+__tests__/e2e/
+├── playwright.config.js   # Config: baseURL, browser, timeout
+├── login.spec.js          # Login/logout flow
+├── navigation.spec.js     # Sidebar, active link, submenu
+└── pages.spec.js          # Smoke test tiap halaman
+```
+
+### 9.3 Skenario Test
+
+#### Login — `login.spec.js`
+
+| Test Case | Input | Expected |
+|-----------|-------|----------|
+| Login page loads | `GET /login.html` | Page title, form email+password, tombol submit |
+| Login sukses | email + password valid | Token tersimpan di localStorage, redirect ke `/index.html` |
+| Login gagal | email/password salah | Tampil pesan error merah |
+| Auto-redirect jika sudah login | — | Redirect ke `/index.html` |
+| Logout | klik tombol logout | Token dihapus, redirect ke `/login.html` |
+| Akses halaman tanpa token | `GET /index.html` | Redirect ke `/login.html` |
+
+#### Navigation — `navigation.spec.js`
+
+| Test Case | Input | Expected |
+|-----------|-------|----------|
+| Home aktif saat di index.html | `GET /index.html` | Link Home punya class `active`, `bg-emerald-100` |
+| Pralokmin Klaster aktif saat di halamannya | `GET /pralokmin-klaster.html` | Link Pralokmin Klaster ter-highlight |
+| Dashboard Mutu → parent Mutu ter-highlight | `GET /mutu.html` | Link Mutu (toggle) ter-highlight, submenu terbuka |
+| Pelayanan Publik aktif | `GET /yanlik.html` | Link Pelayanan Publik ter-highlight |
+| Menu PKP > Klaster 1 | `GET /entri-pkp1.html` | Link PKP ter-highlight (tidak ada sidebar) |
+| Submenu Mutu terbuka saat hover/click | Klik toggle Mutu | Submenu Muncul |
+
+#### Pages — `pages.spec.js`
+
+| Test Case | Input | Expected |
+|-----------|-------|----------|
+| Semua halaman | `GET /<page>.html` | Status 200, title sesuai, konten utama ada |
+
+### 9.4 Menjalankan E2E Tests
+
+Server harus berjalan sebelum menjalankan E2E test:
+
+```bash
+# Terminal 1: Jalankan server
+npm run dev
+
+# Terminal 2: Jalankan E2E test
+npm run test:e2e
+```
+
+Atau satu baris:
+
+```bash
+start /B npm run dev && sleep 3 && npm run test:e2e && taskkill /F /IM node.exe
+```
+
+### 9.5 Auth Strategy
+
+Semua halaman (kecuali login) me-redirect ke `/login.html` jika tidak ada token di localStorage.
+Playwright akan set localStorage sebelum navigasi:
+
+```js
+await page.goto('/login.html');
+await page.evaluate(() => {
+  localStorage.setItem('pkm_token', 'test-token');
+});
+```
+
+Atau mock endpoint `/api/auth/login` via `page.route()`.
+
+---
+
+## 10. Rekomendasi Pengembangan Testing
 
 ### 9.1 Mutation Testing
 Gunakan **Stryker** untuk mutation testing guna mendeteksi apakah test benar-benar memvalidasi behavior, bukan hanya mengeksekusi kode:

@@ -9,7 +9,8 @@
     "test": "jest --forceExit --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:mutation": "stryker run"
+    "test:mutation": "stryker run",
+    "test:e2e": "playwright test --config __tests__/e2e/playwright.config.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -31,7 +32,8 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/__tests__/setup\\.js$",
-      "/__tests__/helpers/"
+      "/__tests__/helpers/",
+      "/__tests__/e2e/"
     ],
     "coverageThreshold": {
       "global": {
@@ -43,6 +45,7 @@
     }
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@stryker-mutator/core": "^9.6.1",
     "@stryker-mutator/jest-runner": "^9.6.1",
     "jest": "^30.4.2",

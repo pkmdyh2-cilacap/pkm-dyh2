@@ -450,25 +450,36 @@ Panduan testing lengkap ada di [TEST.md](./TEST.md). Ringkasan:
 ### 10.1 Menjalankan Test
 
 ```bash
-npm test                 # Semua test + coverage threshold
+npm test                 # Backend unit & integration test + coverage threshold
 npm run test:watch       # Watch mode
 npm run test:coverage    # Dengan laporan coverage
+npm run test:e2e         # E2E frontend test (Playwright)
 ```
 
-### 10.2 Strategi Mocking
+### 10.2 Strategi Testing
 
-Semua route backend menggunakan `supabaseAdmin` yang di-mock di `__tests__/setup.js`. Tidak perlu koneksi Supabase nyata — lihat [TEST.md §2](./TEST.md#2-strategi-mocking).
+| Jenis | Tools | Cakupan |
+|-------|-------|---------|
+| Unit & Integration (Backend) | Jest + Supertest | Routes API: units, indicators, entries, dashboard, upload, files |
+| E2E (Frontend) | Playwright | Login/logout, navigasi sidebar, smoke test halaman |
+| Mutation | Stryker | Deteksi kelemahan test backend |
 
-### 10.3 Coverage Saat Ini
+### 10.3 Mocking
 
-- **100%** statements, branches, functions, lines (95 tests, 8 suites)
-- Threshold: branches 100%, functions 96%, lines 100%, statements 99%
+- **Backend**: Semua route menggunakan `supabaseAdmin` yang di-mock di `__tests__/setup.js`. Tidak perlu koneksi Supabase nyata — lihat [TEST.md §2](./TEST.md#2-strategi-mocking).
+- **Frontend E2E**: Token auth di-set via `localStorage` sebelum navigasi agar bisa mengakses halaman yang diproteksi.
+
+### 10.4 Coverage Saat Ini
+
+- **Backend**: 100% statements, branches, functions, lines (111 tests, 9 suites)
+- **Frontend**: Belum ada coverage — E2E test akan memvalidasi rendering halaman
+- Threshold backend: branches 100%, functions 96%, lines 100%, statements 99%
 - Semua target coverage di [TEST.md §7](./TEST.md#7-coverage-target) **terlampaui**
 
-### 10.4 Rekomendasi Lanjutan
+### 10.5 Rekomendasi Lanjutan
 
-Lihat [TEST.md §9](./TEST.md#9-rekomendasi-pengembangan-testing) untuk pengembangan selanjutnya:
-- Mutation testing (Stryker)
+Lihat [TEST.md §10](./TEST.md#10-rekomendasi-pengembangan-testing) untuk pengembangan selanjutnya:
+- Mutation testing (Stryker) — sudah terkonfigurasi
 - Property-based testing (fast-check)
 - Edge cases & error handling (network timeout, concurrent request, boundary values, RBAC)
 
