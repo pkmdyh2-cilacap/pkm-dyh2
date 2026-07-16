@@ -41,8 +41,6 @@ app.use((req, res, next) => {
 const rootPath = path.join(__dirname, '..', 'public');
 app.use(express.static(rootPath));
 
-app.get('/', (req, res) => res.sendFile(path.join(rootPath, 'index.html')));
-
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api', require('./routes/files'));
 app.use('/api/units', require('./routes/units'));

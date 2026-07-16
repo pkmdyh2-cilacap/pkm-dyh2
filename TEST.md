@@ -274,3 +274,31 @@ describe('GET /api/units', () => {
 - Test download ZIP perlu mock `supabaseAdmin.storage.from().download()` untuk return `Blob`
 - Pastikan environment variables sudah di-set di `setup.js` sebelum import `app.js`
 - Jalankan `npm test` sebelum commit untuk memastikan tidak ada regression
+
+---
+
+## 9. Rekomendasi Pengembangan Testing
+
+### 9.1 Mutation Testing
+Gunakan **Stryker** untuk mutation testing guna mendeteksi apakah test benar-benar memvalidasi behavior, bukan hanya mengeksekusi kode:
+```bash
+npm install --save-dev @stryker-mutator/core
+npx stryker run
+```
+
+### 9.2 Integration / E2E Tests
+Tambahkan integration test dengan **Supertest** untuk skenario nyata antar-route, atau **Playwright** untuk frontend.
+
+### 9.3 Property-based Testing
+Untuk fungsi kompleks, gunakan **fast-check** guna menguji properti invariant secara acak dan melengkapi example-based test.
+
+### 9.4 Edge Cases & Error Handling
+Pastikan skenario berikut tercakup meski coverage 100%:
+- **Network timeouts / koneksi gagal** — mock `supabaseAdmin` agar reject/unexpected error
+- **Invalid input format** — UUID tidak valid, tipe data salah
+- **Concurrent requests** — multiple POST dalam waktu bersamaan
+- **Boundary values** — string maksimal, angka negatif, empty array
+- **Authorization / RBAC** — akses dari role berbeda
+
+### 9.5 Pertahankan Strategi
+Dokumentasikan strategi testing secara berkala agar tetap konsisten seiring bertambahnya fitur baru.

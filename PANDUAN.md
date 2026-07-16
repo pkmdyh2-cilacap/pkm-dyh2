@@ -52,6 +52,8 @@ cd pkm-dyh2
 npm install
 ```
 
+> Test dependencies (`jest`, `supertest`, `@stryker-mutator/core`) otomatis terinstal. Lihat [TEST.md](./TEST.md) untuk panduan testing lengkap.
+
 ### 3.2 Konfigurasi Environment
 
 Buat file `.env` dari template:
@@ -108,6 +110,21 @@ pkm-dyh2/
 ├── vercel.json               # Konfigurasi deploy Vercel
 ├── PLAN.md                   # Daftar bug & rencana perbaikan
 ├── PANDUAN.md                # Dokumentasi ini
+├── TEST.md                   # Panduan testing
+│
+├── __tests__/                # Test files (jest + supertest)
+│   ├── setup.js              # Mock Supabase & env vars
+│   ├── app.test.js           # Integration tests
+│   ├── app.additional.test.js# Additional integration tests
+│   ├── routes/
+│   │   ├── units.test.js
+│   │   ├── indicators.test.js
+│   │   ├── entries.test.js
+│   │   ├── dashboard.test.js
+│   │   ├── upload.test.js
+│   │   └── files.test.js
+│   └── helpers/
+│       └── supabase-mock.js
 │
 ├── .env                      # Environment variables (TIDAK di-git)
 ├── .env.example              # Template env
@@ -426,9 +443,40 @@ Browser (pralokmin-klaster.html)
 
 ---
 
-## 10. Konfigurasi
+## 10. Testing
 
-### 10.1 CORS
+Panduan testing lengkap ada di [TEST.md](./TEST.md). Ringkasan:
+
+### 10.1 Menjalankan Test
+
+```bash
+npm test                 # Semua test + coverage threshold
+npm run test:watch       # Watch mode
+npm run test:coverage    # Dengan laporan coverage
+```
+
+### 10.2 Strategi Mocking
+
+Semua route backend menggunakan `supabaseAdmin` yang di-mock di `__tests__/setup.js`. Tidak perlu koneksi Supabase nyata — lihat [TEST.md §2](./TEST.md#2-strategi-mocking).
+
+### 10.3 Coverage Saat Ini
+
+- **100%** statements, branches, functions, lines (95 tests, 8 suites)
+- Threshold: branches 100%, functions 96%, lines 100%, statements 99%
+- Semua target coverage di [TEST.md §7](./TEST.md#7-coverage-target) **terlampaui**
+
+### 10.4 Rekomendasi Lanjutan
+
+Lihat [TEST.md §9](./TEST.md#9-rekomendasi-pengembangan-testing) untuk pengembangan selanjutnya:
+- Mutation testing (Stryker)
+- Property-based testing (fast-check)
+- Edge cases & error handling (network timeout, concurrent request, boundary values, RBAC)
+
+---
+
+## 11. Konfigurasi
+
+### 11.1 CORS
 
 File: `src/app.js:11-18`
 
@@ -446,13 +494,13 @@ app.use(cors({
 
 Set `CORS_ORIGIN` di `.env` dengan daftar origin yang diizinkan, pisah koma.
 
-### 10.2 Content Security Policy (CSP)
+### 11.2 Content Security Policy (CSP)
 
 File: `src/app.js:24-38`
 
 CSP di-generate secara dinamis berdasarkan `host` request. Domain Supabase untuk storage diambil dari `SUPABASE_URL`. CDN Tailwind, Font Awesome, dan `unsafe-inline` untuk script/style diizinkan.
 
-### 10.3 Environment Variables
+### 11.3 Environment Variables
 
 | Variable | Wajib | Default | Keterangan |
 |----------|-------|---------|------------|
@@ -464,7 +512,7 @@ CSP di-generate secara dinamis berdasarkan `host` request. Domain Supabase untuk
 
 > Di Vercel, env vars di-set via Vercel Dashboard. `SUPABASE_SERVICE_KEY` sebaiknya dienkripsi.
 
-### 10.4 Vercel Deployment
+### 11.4 Vercel Deployment
 
 File: `vercel.json`
 
@@ -485,7 +533,7 @@ File: `vercel.json`
 
 ---
 
-## 11. Security Checklist
+## 12. Security Checklist
 
 - [ ] **Jangan commit `.env`** — sudah di `.gitignore`, tapi pastikan tidak pernah di-`git add` manual
 - [ ] **CORS whitelist** — pastikan `CORS_ORIGIN` hanya berisi domain yang dikenal
@@ -494,10 +542,11 @@ File: `vercel.json`
 - [ ] **Bedakan client** — `supabase` (anon key) untuk frontend, `supabaseAdmin` (service role) untuk backend. Route backend pakai `supabaseAdmin` agar tidak terkendala RLS
 - [ ] **Validasi input** — multer untuk file, express.json untuk JSON body. Error handler menangkap multer errors
 - [ ] **Ukuran file** — maksimal 10 MB per file (baik frontend maupun backend)
+- [ ] **Jalankan test** — `npm test` sebelum commit untuk memastikan tidak ada regression (lihat [TEST.md](./TEST.md))
 
 ---
 
-## 12. Troubleshooting & FAQ
+## 13. Troubleshooting & FAQ
 
 ### "CORS error di browser"
 
@@ -558,7 +607,7 @@ CORS_ORIGIN=http://localhost:3000,http://localhost:5173,https://domain-vercel.ve
 
 ---
 
-## 13. Cara Menambahkan Route Baru
+## 14. Cara Menambahkan Route Baru
 
 1. Buat file baru di `src/routes/` (contoh: `reports.js`)
 2. Gunakan pattern yang ada:
@@ -591,7 +640,7 @@ app.use('/api/reports', require('./routes/reports'));
 
 ---
 
-## 14. Changelog
+## 15. Changelog
 
 | Versi | Tanggal | Perubahan |
 |-------|---------|-----------|
@@ -599,7 +648,7 @@ app.use('/api/reports', require('./routes/reports'));
 
 ---
 
-## 15. Lisensi & Kontribusi
+## 16. Lisensi & Kontribusi
 
 **Lisensi**: —
 
