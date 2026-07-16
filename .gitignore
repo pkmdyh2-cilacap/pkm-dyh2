@@ -7,7 +7,7 @@ node_modules/
 coverage/
 .kilo/
 .stryker-tmp/
-reports/stryker/
+reports/
 Koreksi.md
 PANDUAN.md
 TEST.md
