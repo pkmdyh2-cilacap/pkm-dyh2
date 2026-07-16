@@ -124,3 +124,19 @@ Format: [YYYY-MM-DD HH:MM] - Deskripsi singkat
                   public/auth.js, public/login.html, public/*.html (10 halaman),
                   __tests__/setup.js, __tests__/routes/auth.test.js,
                   __tests__/ (8 file test lain diupdate)
+
+[2026-07-17 10:00] - Fix navigasi sidebar + tambah tombol logout
+  Perubahan:
+    - Perbaiki script active link di index.html, mutu.html, yanlik.html:
+      * Ekstrak nama file dari pathname agar perbandingan URL benar
+      * Cari link cocok di seluruh sidebar (termasuk submenu), bukan cuma .nav-link
+      * Submenu otomatis terbuka + parent toggle ter-highlight
+    - Tambah tombol logout (header + sidebar) di mutu.html dan yanlik.html
+    - Tambah tombol logout di halaman tanpa sidebar (dashboard-pkp, entri-pkp1-5,
+      kelola-indikator, pralokmin, pralokmin-klaster)
+  File terdampak: public/index.html, public/mutu.html, public/yanlik.html,
+                  public/dashboard-pkp.html, public/entri-pkp1.html,
+                  public/entri-pkp2.html, public/entri-pkp3.html,
+                  public/entri-pkp4.html, public/entri-pkp5.html,
+                  public/kelola-indikator.html, public/pralokmin.html,
+                  public/pralokmin-klaster.html

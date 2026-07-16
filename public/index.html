@@ -124,18 +124,37 @@
 
   <script>
     (function() {
-      // Menandai menu aktif berdasarkan URL
       const currentPath = window.location.pathname;
-      const navLinks = document.querySelectorAll('.nav-link');
-      navLinks.forEach(link => {
+      const currentFile = currentPath.split('/').pop() || 'index.html';
+
+      document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active', 'bg-emerald-100', 'text-emerald-700', 'rounded-md');
+      });
+
+      let matched = false;
+
+      document.querySelectorAll('#sidebar a').forEach(link => {
         const href = link.getAttribute('href');
-        if (href === currentPath || (href === 'index.html' && (currentPath.endsWith('/') || currentPath.endsWith('index.html')))) {
-          link.classList.add('active', 'bg-emerald-100', 'text-emerald-700', 'rounded-md');
+        if (href === currentFile || (href === 'index.html' && currentFile === 'index.html')) {
+          matched = true;
+          if (link.classList.contains('nav-link')) {
+            link.classList.add('active', 'bg-emerald-100', 'text-emerald-700', 'rounded-md');
+          } else {
+            const submenu = link.closest('ul');
+            if (submenu) {
+              submenu.classList.add('submenu-open');
+              const toggle = submenu.previousElementSibling;
+              if (toggle && toggle.classList.contains('nav-link')) {
+                toggle.classList.add('active', 'bg-emerald-100', 'text-emerald-700', 'rounded-md');
+                const chevron = toggle.querySelector('.fa-chevron-down');
+                if (chevron) chevron.classList.add('rotate-180');
+              }
+            }
+          }
         }
       });
-      // Jika tidak ada yang aktif, tandai Home
-      if (!document.querySelector('.nav-link.active')) {
+
+      if (!matched) {
         document.querySelector('.nav-link[href="index.html"]')?.classList.add('active', 'bg-emerald-100', 'text-emerald-700', 'rounded-md');
       }
     })();
