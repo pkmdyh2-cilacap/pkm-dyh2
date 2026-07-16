@@ -1,9 +1,13 @@
 node_modules/
 .env
 .env.local
+.env.example
 *.log
 .vercel
 coverage/
 .kilo/
 .stryker-tmp/
 reports/stryker/
+Koreksi.md
+PANDUAN.md
+TEST.md

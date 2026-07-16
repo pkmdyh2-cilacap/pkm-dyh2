@@ -1,0 +1,116 @@
+LOGGING PERUBAHAN - Pralokmin (pkm-dyh2)
+=========================================
+Backend Pralokmin dengan Supabase (Express.js + Supabase)
+
+Format: [YYYY-MM-DD HH:MM] - Deskripsi singkat
+  Perubahan: Penjelasan detail
+  File terdampak: Daftar file (jika relevan)
+
+
+[2026-06-28 20:22] - Initial commit: pkm-dyh2
+  Perubahan: Inisialisasi project Pralokmin backend + frontend. Struktur awal project
+             dengan Express.js, Supabase, dan template frontend.
+  File terdampak: Seluruh file pertama kali di-create
+
+[2026-06-28 21:05] - Update error migrasi render
+  Perubahan: Perbaikan error saat migrasi dari Render ke platform lain.
+
+[2026-06-28 21:29] - Add netlify.toml config
+  Perubahan: Menambahkan konfigurasi untuk deployment ke Netlify.
+  File terdampak: netlify.toml
+
+[2026-06-28 21:40] - Remove unused server.js.backup
+  Perubahan: Membersihkan file backup yang tidak terpakai.
+
+[2026-06-28 21:50] - Add favicon cilacap
+  Perubahan: Menambahkan favicon Kabupaten Cilacap.
+  File terdampak: public/favicon.ico
+
+[2026-06-28 21:51] - Deploy favicon
+  Perubahan: Deployment favicon agar tampil di browser.
+
+[2026-06-28 22:13] - Update sidemenu, favicon
+  Perubahan: Pembaruan pada side menu navigasi dan favicon.
+  File terdampak: public/
+
+[2026-06-28 22:26] - Optimalisasi mobile
+  Perubahan: Optimalisasi tampilan untuk perangkat mobile/responsive.
+
+[2026-06-30 10:16] - Adding loading state on cold start
+  Perubahan: Menambahkan state loading saat cold start (server pertama kali diakses).
+
+[2026-06-30 11:51] - Adding endpoint health
+  Perubahan: Menambahkan endpoint /health untuk pengecekan status server.
+  File terdampak: routes baru
+
+[2026-07-03 10:47] - Menambah minimum upload lampiran 10mb
+  Perubahan: Meningkatkan batas minimum upload file lampiran menjadi 10 MB.
+  File terdampak: src/app.js atau config multer
+
+[2026-07-03 11:40] - Persiapan deploy vercel
+  Perubahan: Persiapan konfigurasi untuk deployment ke Vercel.
+  File terdampak: vercel.json, api/index.js
+
+[2026-07-03 13:02] - Revert "adding endpoint health"
+  Perubahan: Revert karena endpoint health mungkin bermasalah.
+
+[2026-07-03 13:03] - Revert
+  Perubahan: Revert perubahan sebelumnya.
+
+[2026-07-03 13:36] - Kembali awal
+  Perubahan: Mengembalikan project ke state awal setelah percobaan revert.
+
+[2026-07-06 13:41] - Update zip
+  Perubahan: Pembaruan pada fitur kompresi/zip file.
+
+[2026-07-07 10:29] - Masalah CSP
+  Perubahan: Perbaikan Content Security Policy header untuk mengizinkan resource
+             yang diperlukan (Tailwind CDN, Supabase, dll).
+  File terdampak: src/app.js
+
+[2026-07-08 19:14] - Restrukturisasi file
+  Perubahan: Penataan ulang struktur folder dan file project agar lebih rapi.
+  File terdampak: Banyak file dipindahkan/diatur ulang
+
+[2026-07-08 20:37] - Adding mutu and mobile optimalization
+  Perubahan: Menambahkan modul/fitur Mutu dan optimalisasi mobile lanjutan.
+  File terdampak: routes/mutu?, public/
+
+[2026-07-08 22:17] - Delete .env.example
+  Perubahan: Menghapus .env.example dari repository (tetap ada di lokal).
+
+[2026-07-11 16:25] - Restrukturisasi + migrasi vercel
+  Perubahan: Restrukturisasi besar-besaran + migrasi penuh ke Vercel.
+             Penyesuaian kode untuk serverless function Vercel.
+  File terdampak: api/index.js, vercel.json, src/app.js
+
+[2026-07-15 12:39] - Menambahkan menu yanlik dan mutu
+  Perubahan: Menambahkan modul menu Yanlik (Yanlik?) dan Mutu ke dalam sistem.
+  File terdampak: routes/units?, routes/indicators?
+
+[2026-07-16 11:47] - Fix bug + add test and security update
+  Perubahan: Perbaikan bug, penambahan unit test (Jest), dan pembaruan keamanan.
+  File terdampak: __tests__/, package.json
+
+[2026-07-16 13:27] - Bug fix 2.0
+  Perubahan: Perbaikan bug lanjutan setelah update sebelumnya.
+
+[2026-07-16 13:57] - Update panduan.md
+  Perubahan: Memperbarui file panduan dokumentasi.
+
+[2026-07-16 14:22] - Adding other test
+  Perubahan: Menambahkan test-case tambahan untuk meningkatkan coverage.
+  File terdampak: __tests__/
+
+[2026-07-16 20:24] - Hapus .env.example dari tracking GitHub
+  Perubahan: .env.example dihapus dari git tracking, ditambahkan ke .gitignore.
+  File terdampak: .gitignore, .env.example
+
+[2026-07-16 20:31] - Hapus Koreksi.md, PANDUAN.md, TEST.md dari tracking GitHub
+  Perubahan: File dokumentasi dihapus dari git tracking (tetap di lokal),
+             ditambahkan ke .gitignore.
+  File terdampak: .gitignore, Koreksi.md, PANDUAN.md, TEST.md
+
+[2026-07-16 20:37] - Membuat Log.txt
+  Perubahan: Membuat file logging perubahan project ini.
+  File terdampak: Log.txt
