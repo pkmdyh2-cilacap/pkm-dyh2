@@ -134,7 +134,7 @@ function setStatus(el, msg, ok = true) {
 }
 
 async function api(path, opts = {}) {
-  const res = await fetch(API + path, {
+  const res = await apiAuth(API + path, {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
@@ -321,5 +321,7 @@ $("klasterSelect").onchange = async () => {
   await muatIndikator();
 })();
 </script>
+<script src="auth.js"></script>
+<script>checkAuth();</script>
 </body>
 </html>

@@ -114,3 +114,13 @@ Format: [YYYY-MM-DD HH:MM] - Deskripsi singkat
 [2026-07-16 20:37] - Membuat Log.txt
   Perubahan: Membuat file logging perubahan project ini.
   File terdampak: Log.txt
+
+[2026-07-16 22:30] - Implementasi fitur autentikasi (Supabase Auth)
+  Perubahan: Menambahkan sistem login email/password menggunakan Supabase Auth.
+             Backend: middleware auth, route login/logout/me, proteksi /api/*.
+             Frontend: auth.js helper, login.html, integrasi ke 10 halaman HTML.
+             Testing: 111 test passing, 100% coverage.
+  File terdampak: src/middleware/auth.js, src/routes/auth.js, src/app.js,
+                  public/auth.js, public/login.html, public/*.html (10 halaman),
+                  __tests__/setup.js, __tests__/routes/auth.test.js,
+                  __tests__/ (8 file test lain diupdate)

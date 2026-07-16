@@ -18,7 +18,7 @@ describe('GET /api/dashboard', () => {
       error: null
     }));
 
-    const res = await request(app).get('/api/dashboard');
+    const res = await request(app).get('/api/dashboard').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(5);
     res.body.forEach(klaster => {
@@ -33,7 +33,7 @@ describe('GET /api/dashboard', () => {
   it('returns persen = 0 when data is empty', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [], error: null }));
 
-    const res = await request(app).get('/api/dashboard');
+    const res = await request(app).get('/api/dashboard').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     res.body.forEach(klaster => {
       expect(klaster.total).toBe(0);
@@ -44,7 +44,7 @@ describe('GET /api/dashboard', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).get('/api/dashboard');
+    const res = await request(app).get('/api/dashboard').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -52,7 +52,7 @@ describe('GET /api/dashboard', () => {
   it('handles null data gracefully (branch data ?)', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).get('/api/dashboard');
+    const res = await request(app).get('/api/dashboard').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     res.body.forEach(klaster => {
       expect(klaster.total).toBe(0);
@@ -73,7 +73,7 @@ describe('GET /api/dashboard', () => {
       error: null
     }));
 
-    const res = await request(app).get('/api/dashboard');
+    const res = await request(app).get('/api/dashboard').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     res.body.forEach(klaster => {
       expect(klaster.total).toBe(5);

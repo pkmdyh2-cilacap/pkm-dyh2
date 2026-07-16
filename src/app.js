@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const { supabaseAdmin } = require('./config/supabase');
 
+const { authenticate } = require('./middleware/auth');
+
 const app = express();
 
 app.use(cors({
@@ -41,12 +43,14 @@ app.use((req, res, next) => {
 const rootPath = path.join(__dirname, '..', 'public');
 app.use(express.static(rootPath));
 
-app.use('/api/upload', require('./routes/upload'));
-app.use('/api', require('./routes/files'));
-app.use('/api/units', require('./routes/units'));
-app.use('/api/indicators', require('./routes/indicators'));
-app.use('/api/entries', require('./routes/entries'));
-app.use('/api/dashboard', require('./routes/dashboard'));
+app.use('/api/auth', require('./routes/auth'));
+
+app.use('/api/upload', authenticate, require('./routes/upload'));
+app.use('/api', authenticate, require('./routes/files'));
+app.use('/api/units', authenticate, require('./routes/units'));
+app.use('/api/indicators', authenticate, require('./routes/indicators'));
+app.use('/api/entries', authenticate, require('./routes/entries'));
+app.use('/api/dashboard', authenticate, require('./routes/dashboard'));
 
 // Diberi nama (bukan lagi anonymous) dan di-export supaya bisa dites
 // langsung sebagai unit function, tanpa harus dipicu lewat request HTTP asli.

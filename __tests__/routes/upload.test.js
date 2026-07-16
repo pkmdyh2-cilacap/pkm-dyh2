@@ -9,7 +9,7 @@ beforeEach(() => {
 
 describe('POST /api/upload', () => {
   it('returns 400 when bulan and klaster are missing', async () => {
-    const res = await request(app).post('/api/upload').send({});
+    const res = await request(app).post('/api/upload').set('Authorization', 'Bearer test-token').send({});
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error', 'Bulan dan Klaster wajib diisi');
   });
@@ -17,6 +17,7 @@ describe('POST /api/upload', () => {
   it('returns 400 when no files are uploaded', async () => {
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .field('bulan', '2024-01')
       .field('klaster', '1');
     expect(res.status).toBe(400);
@@ -29,6 +30,7 @@ describe('POST /api/upload', () => {
 
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .field('bulan', '2024-01')
       .field('klaster', '1')
       .attach('undangan', Buffer.from('%PDF-1.4 fake pdf content'), 'undangan.pdf')
@@ -41,6 +43,7 @@ describe('POST /api/upload', () => {
   it('rejects non-PDF files with error', async () => {
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .field('bulan', '2024-01')
       .field('klaster', '1')
       .attach('undangan', Buffer.from('not a pdf'), 'test.txt');
@@ -56,6 +59,7 @@ describe('POST /api/upload', () => {
 
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .field('bulan', '2024-01')
       .field('klaster', '1')
       .attach('undangan', Buffer.from('%PDF-1.4 test'), 'test.pdf');
@@ -71,6 +75,7 @@ describe('POST /api/upload', () => {
 
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .field('bulan', '2024-01')
       .field('klaster', '1')
       .attach('undangan', Buffer.from('%PDF-1.4 test'), 'test.pdf');
@@ -82,6 +87,7 @@ describe('POST /api/upload', () => {
   it('handles missing req.files gracefully via JSON body (req.files || {} fallback)', async () => {
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .set('Content-Type', 'application/json')
       .send({ bulan: '2024-01', klaster: '1' });
     expect(res.status).toBe(400);
@@ -93,6 +99,7 @@ describe('POST /api/upload', () => {
 
     const res = await request(app)
       .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
       .field('bulan', '2024-01')
       .field('klaster', '1')
       .attach('undangan', largeBuffer, 'large.pdf');

@@ -177,7 +177,11 @@
       async function fetchWithRetry(url, options = {}, retries = 3) {
         for (let i = 0; i < retries; i++) {
           try {
-            const res = await fetch(url, options);
+            const token = localStorage.getItem('pkm_token');
+            const headers = { ...options.headers };
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            const res = await fetch(url, { ...options, headers });
+            if (res.status === 401) { localStorage.removeItem('pkm_token'); window.location.href = '/login.html'; throw new Error('Sesi habis'); }
             if (res.ok) return res;
             if (i === retries - 1) throw new Error(`HTTP ${res.status}: ${res.statusText}`);
           } catch (err) {
@@ -270,7 +274,7 @@
         zipStatus.textContent = '⏳ Menyiapkan ZIP...';
         zipStatus.className = 'text-sm text-emerald-500';
         try {
-          const response = await fetch(`${API_BASE}/api/download/${month}`);
+          const response = await apiAuth(`${API_BASE}/api/download/${month}`);
           if (!response.ok) {
             const err = await response.json();
             throw new Error(err.error || 'Gagal download');
@@ -402,15 +406,23 @@
       });
 
       // Download ZIP per klaster
-      document.getElementById('downloadFileBtn').addEventListener('click', function() {
+      document.getElementById('downloadFileBtn').addEventListener('click', async function() {
         const bulan = this.dataset.bulan;
         const klaster = this.dataset.klaster;
-        const link = document.createElement('a');
-        link.href = `${API_BASE}/api/download-klaster/${bulan}/${klaster}`;
-        link.download = `Pralokmin_Klaster${klaster}_${bulan}.zip`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        try {
+          const response = await apiAuth(`${API_BASE}/api/download-klaster/${bulan}/${klaster}`);
+          if (!response.ok) { alert('Gagal download'); return; }
+          const blob = await response.blob();
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = `Pralokmin_Klaster${klaster}_${bulan}.zip`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(link.href);
+        } catch (err) {
+          alert('Gagal download: ' + err.message);
+        }
       });
 
       // Render awal
@@ -428,5 +440,7 @@
 
 </div>
 
+<script src="auth.js"></script>
+<script>checkAuth();</script>
 </body>
 </html>

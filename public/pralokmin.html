@@ -226,7 +226,7 @@
         formData.append('lampiran', document.getElementById('fileLampiran').files[0]);
 
         try {
-          const response = await fetch('/api/upload', {
+          const response = await apiAuth('/api/upload', {
             method: 'POST',
             body: formData
           });
@@ -263,5 +263,7 @@
       }
     })();
   </script>
+<script src="auth.js"></script>
+<script>checkAuth();</script>
 </body>
 </html>

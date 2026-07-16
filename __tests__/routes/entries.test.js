@@ -15,7 +15,7 @@ describe('GET /api/entries', () => {
     ];
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: mockData, error: null }));
 
-    const res = await request(app).get('/api/entries');
+    const res = await request(app).get('/api/entries').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(2);
   });
@@ -26,7 +26,7 @@ describe('GET /api/entries', () => {
     ];
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: mockData, error: null }));
 
-    const res = await request(app).get('/api/entries?klaster=3');
+    const res = await request(app).get('/api/entries?klaster=3').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(1);
   });
@@ -34,7 +34,7 @@ describe('GET /api/entries', () => {
   it('returns empty array when data is null', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).get('/api/entries');
+    const res = await request(app).get('/api/entries').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
   });
@@ -44,7 +44,7 @@ describe('POST /api/entries', () => {
   it('creates entry with valid data', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [{ id: 10 }], error: null }));
 
-    const res = await request(app).post('/api/entries').send({
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
       indikatorId: 1,
       petugas: 'Dr. X',
       bulan: 'Januari',
@@ -60,7 +60,7 @@ describe('POST /api/entries', () => {
   it('stores BOR fields when bor is true', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [{ id: 11 }], error: null }));
 
-    const res = await request(app).post('/api/entries').send({
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
       indikatorId: 1,
       petugas: 'Dr. Y',
       bulan: 'Januari',
@@ -79,7 +79,7 @@ describe('POST /api/entries', () => {
   it('returns 500 when insert fails', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('Insert failed') }));
 
-    const res = await request(app).post('/api/entries').send({
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
       indikatorId: 1,
       petugas: 'Dr. Fail',
       bulan: 'Maret',
@@ -96,7 +96,7 @@ describe('PUT /api/entries/:id', () => {
   it('updates entry and sets updated_at', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).put('/api/entries/1').send({
+    const res = await request(app).put('/api/entries/1').set('Authorization', 'Bearer test-token').send({
       indikatorId: 1,
       petugas: 'Dr. Z',
       bulan: 'Februari',
@@ -111,7 +111,7 @@ describe('PUT /api/entries/:id', () => {
   it('updates entry with bor true', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).put('/api/entries/1').send({
+    const res = await request(app).put('/api/entries/1').set('Authorization', 'Bearer test-token').send({
       indikatorId: 1,
       petugas: 'Dr. Bor',
       bulan: 'Maret',
@@ -130,7 +130,7 @@ describe('PUT /api/entries/:id', () => {
   it('returns 500 when update fails', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('Update failed') }));
 
-    const res = await request(app).put('/api/entries/1').send({
+    const res = await request(app).put('/api/entries/1').set('Authorization', 'Bearer test-token').send({
       indikatorId: 1,
       petugas: 'Dr. Z',
       bulan: 'Februari',
@@ -147,7 +147,7 @@ describe('Error handling', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).get('/api/entries');
+    const res = await request(app).get('/api/entries').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -157,7 +157,7 @@ describe('DELETE /api/entries/:id', () => {
   it('deletes entry', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).delete('/api/entries/1');
+    const res = await request(app).delete('/api/entries/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('message');
   });
@@ -165,7 +165,7 @@ describe('DELETE /api/entries/:id', () => {
   it('returns 500 when delete fails', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('Delete failed') }));
 
-    const res = await request(app).delete('/api/entries/1');
+    const res = await request(app).delete('/api/entries/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });

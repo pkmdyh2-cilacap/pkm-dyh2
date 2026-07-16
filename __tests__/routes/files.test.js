@@ -11,7 +11,7 @@ describe('GET /api/status/:bulan', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: { message: 'DB error' } }));
 
-    const res = await request(app).get('/api/status/2024-01');
+    const res = await request(app).get('/api/status/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -19,7 +19,7 @@ describe('GET /api/status/:bulan', () => {
   it('returns 500 when data is null without explicit error (catch block)', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).get('/api/status/2024-01');
+    const res = await request(app).get('/api/status/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -34,7 +34,7 @@ describe('GET /api/status/:bulan', () => {
       error: null
     }));
 
-    const res = await request(app).get('/api/status/2024-01');
+    const res = await request(app).get('/api/status/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     const body = res.body;
     expect(Object.keys(body)).toHaveLength(5);
@@ -55,7 +55,7 @@ describe('GET /api/files/:bulan/:klaster', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).get('/api/files/2024-01/1');
+    const res = await request(app).get('/api/files/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -66,7 +66,7 @@ describe('GET /api/files/:bulan/:klaster', () => {
     ];
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: mockData, error: null }));
 
-    const res = await request(app).get('/api/files/2024-01/1');
+    const res = await request(app).get('/api/files/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body).toHaveLength(1);
@@ -80,7 +80,7 @@ describe('DELETE /api/file/:bulan/:klaster/:jenis', () => {
     const singleData = { storage_path: '2024-01/klaster1/undangan/test.pdf' };
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: singleData, error: null }));
 
-    const res = await request(app).delete('/api/file/2024-01/1/undangan');
+    const res = await request(app).delete('/api/file/2024-01/1/undangan').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('success', true);
   });
@@ -88,14 +88,14 @@ describe('DELETE /api/file/:bulan/:klaster/:jenis', () => {
   it('returns 404 when file does not exist', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: { message: 'Not found' } }));
 
-    const res = await request(app).delete('/api/file/2024-01/1/undangan');
+    const res = await request(app).delete('/api/file/2024-01/1/undangan').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
   });
 
   it('returns 404 when single() returns null without fetchError (branch !data)', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).delete('/api/file/2024-01/1/undangan');
+    const res = await request(app).delete('/api/file/2024-01/1/undangan').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error', 'File tidak ditemukan');
   });
@@ -106,7 +106,7 @@ describe('DELETE /api/file/:bulan/:klaster/:jenis', () => {
       .mockReturnValueOnce(buildMockChain({ data: singleData, error: null }))
       .mockReturnValueOnce(buildMockChain({ data: null, error: new Error('Delete failed') }));
 
-    const res = await request(app).delete('/api/file/2024-01/1/undangan');
+    const res = await request(app).delete('/api/file/2024-01/1/undangan').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -116,7 +116,7 @@ describe('DELETE /api/files/:bulan/:klaster', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).delete('/api/files/2024-01/1');
+    const res = await request(app).delete('/api/files/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -130,7 +130,7 @@ describe('DELETE /api/files/:bulan/:klaster', () => {
       error: null
     }));
 
-    const res = await request(app).delete('/api/files/2024-01/1');
+    const res = await request(app).delete('/api/files/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('success', true);
   });
@@ -143,7 +143,7 @@ describe('DELETE /api/files/:bulan/:klaster', () => {
       .mockReturnValueOnce(buildMockChain({ data: files, error: null }))
       .mockReturnValueOnce(buildMockChain({ data: null, error: new Error('Delete failed') }));
 
-    const res = await request(app).delete('/api/files/2024-01/1');
+    const res = await request(app).delete('/api/files/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -151,7 +151,7 @@ describe('DELETE /api/files/:bulan/:klaster', () => {
   it('returns 404 when no files exist', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [], error: null }));
 
-    const res = await request(app).delete('/api/files/2024-01/1');
+    const res = await request(app).delete('/api/files/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
   });
@@ -168,7 +168,7 @@ describe('GET /api/download/:bulan', () => {
     const mockBlob = { arrayBuffer: jest.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer) };
     supabaseAdmin.storage.from().download.mockResolvedValue({ data: mockBlob, error: null });
 
-    const res = await request(app).get('/api/download/2024-01');
+    const res = await request(app).get('/api/download/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toContain('application/zip');
   });
@@ -176,7 +176,7 @@ describe('GET /api/download/:bulan', () => {
   it('returns 404 when no files exist', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [], error: null }));
 
-    const res = await request(app).get('/api/download/2024-01');
+    const res = await request(app).get('/api/download/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
   });
@@ -190,7 +190,7 @@ describe('GET /api/download/:bulan', () => {
     }));
     supabaseAdmin.storage.from().download.mockResolvedValue({ data: null, error: new Error('Failed') });
 
-    const res = await request(app).get('/api/download/2024-01');
+    const res = await request(app).get('/api/download/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -198,7 +198,7 @@ describe('GET /api/download/:bulan', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).get('/api/download/2024-01');
+    const res = await request(app).get('/api/download/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -216,7 +216,7 @@ describe('GET /api/download/:bulan', () => {
       .download.mockResolvedValueOnce({ data: mockBlob, error: null })
       .mockResolvedValueOnce({ data: null, error: new Error('Download failed') });
 
-    const res = await request(app).get('/api/download/2024-01');
+    const res = await request(app).get('/api/download/2024-01').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.headers['x-gagal-files']).toBeDefined();
   });
@@ -232,7 +232,7 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
     }));
     supabaseAdmin.storage.from().download.mockResolvedValue({ data: null, error: new Error('Failed') });
 
-    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    const res = await request(app).get('/api/download-klaster/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -250,7 +250,7 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
       .download.mockResolvedValueOnce({ data: mockBlob, error: null })
       .mockResolvedValueOnce({ data: null, error: new Error('Download failed') });
 
-    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    const res = await request(app).get('/api/download-klaster/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.headers['x-gagal-files']).toBeDefined();
   });
@@ -265,7 +265,7 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
     const mockBlob = { arrayBuffer: jest.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer) };
     supabaseAdmin.storage.from().download.mockResolvedValue({ data: mockBlob, error: null });
 
-    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    const res = await request(app).get('/api/download-klaster/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toContain('application/zip');
   });
@@ -280,7 +280,7 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
     const mockBlob = { arrayBuffer: jest.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer) };
     supabaseAdmin.storage.from().download.mockResolvedValue({ data: mockBlob, error: null });
 
-    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    const res = await request(app).get('/api/download-klaster/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.headers['content-type']).toContain('application/zip');
   });
@@ -288,7 +288,7 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
   it('returns 404 when no files exist', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [], error: null }));
 
-    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    const res = await request(app).get('/api/download-klaster/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(404);
     expect(res.body).toHaveProperty('error');
   });
@@ -296,7 +296,7 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    const res = await request(app).get('/api/download-klaster/2024-01/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });

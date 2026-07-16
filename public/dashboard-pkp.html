@@ -135,7 +135,7 @@ function fmt(v, satuan) {
 }
 
 async function api(path, opts = {}) {
-  const res = await fetchWithRetry(API + path, {
+  const res = await apiAuth(API + path, {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
@@ -269,5 +269,7 @@ $("cari").oninput = () => { halamanTabel = 1; renderTabel(); };
   renderTabel();
 })();
 </script>
+<script src="auth.js"></script>
+<script>checkAuth();</script>
 </body>
 </html>

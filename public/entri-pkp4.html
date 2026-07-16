@@ -155,7 +155,7 @@ function setStatus(el, msg, ok = true) {
 }
 
 async function api(path, opts = {}) {
-  const res = await fetch(API + path, {
+  const res = await apiAuth(API + path, {
     headers: { 'Content-Type': 'application/json' },
     ...opts,
   });
@@ -498,5 +498,7 @@ $("btnResetCari").onclick = () => { $("cari").value = ""; halamanTabel = 1; rend
   await muatData();
 })();
 </script>
+<script src="auth.js"></script>
+<script>checkAuth();</script>
 </body>
 </html>

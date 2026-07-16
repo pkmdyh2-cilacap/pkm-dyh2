@@ -15,7 +15,7 @@ describe('GET /api/units', () => {
     ];
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: mockData, error: null }));
 
-    const res = await request(app).get('/api/units');
+    const res = await request(app).get('/api/units').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toEqual(mockData);
   });
@@ -24,7 +24,7 @@ describe('GET /api/units', () => {
     const mockData = [{ id: 1, klaster: 1, nama: 'UGD', created_at: '2024-01-01' }];
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: mockData, error: null }));
 
-    const res = await request(app).get('/api/units?klaster=1');
+    const res = await request(app).get('/api/units?klaster=1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toEqual(mockData);
   });
@@ -36,14 +36,14 @@ describe('POST /api/units', () => {
       .mockReturnValueOnce(buildMockChain({ data: null, error: null }))
       .mockReturnValueOnce(buildMockChain({ data: [{ id: 99 }], error: null }));
 
-    const res = await request(app).post('/api/units').send({ nama: 'Unit Baru' });
+    const res = await request(app).post('/api/units').set('Authorization', 'Bearer test-token').send({ nama: 'Unit Baru' });
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('id', 99);
     expect(res.body).toHaveProperty('message');
   });
 
   it('rejects empty name', async () => {
-    const res = await request(app).post('/api/units').send({ nama: '' });
+    const res = await request(app).post('/api/units').set('Authorization', 'Bearer test-token').send({ nama: '' });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error');
   });
@@ -51,7 +51,7 @@ describe('POST /api/units', () => {
   it('rejects duplicate name', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [{ id: 1 }], error: null }));
 
-    const res = await request(app).post('/api/units').send({ nama: 'Unit Ada' });
+    const res = await request(app).post('/api/units').set('Authorization', 'Bearer test-token').send({ nama: 'Unit Ada' });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty('error', 'Unit itu sudah ada.');
   });
@@ -63,7 +63,7 @@ describe('POST /api/units', () => {
       .mockReturnValueOnce(buildMockChain({ data: null, error: null }))
       .mockReturnValueOnce(buildMockChain({ data: null, error: new Error('Insert failed') }));
 
-    const res = await request(app).post('/api/units').send({ nama: 'Unit Gagal' });
+    const res = await request(app).post('/api/units').set('Authorization', 'Bearer test-token').send({ nama: 'Unit Gagal' });
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -73,7 +73,7 @@ describe('Error handling', () => {
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 
-    const res = await request(app).get('/api/units');
+    const res = await request(app).get('/api/units').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
@@ -83,7 +83,7 @@ describe('DELETE /api/units/:id', () => {
   it('deletes unit by id', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
 
-    const res = await request(app).delete('/api/units/1');
+    const res = await request(app).delete('/api/units/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('message');
   });
@@ -91,7 +91,7 @@ describe('DELETE /api/units/:id', () => {
   it('returns 500 when delete fails', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('Delete failed') }));
 
-    const res = await request(app).delete('/api/units/1');
+    const res = await request(app).delete('/api/units/1').set('Authorization', 'Bearer test-token');
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('error');
   });
