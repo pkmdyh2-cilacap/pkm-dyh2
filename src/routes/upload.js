@@ -29,6 +29,13 @@ router.post('/', upload, async (req, res) => {
     if (!bulan || !klaster) {
       return res.status(400).json({ success: false, error: 'Bulan dan Klaster wajib diisi' });
     }
+    const klasterNum = parseInt(klaster);
+    if (isNaN(klasterNum) || klasterNum < 1 || klasterNum > 5) {
+      return res.status(400).json({ success: false, error: 'Klaster harus angka 1-5' });
+    }
+    if (bulan.length > 50) {
+      return res.status(400).json({ success: false, error: 'Bulan maksimal 50 karakter' });
+    }
     const files = req.files || {};
     const jenisMap = { undangan: 'undangan', notulen: 'notulen', daftar_hadir: 'daftar_hadir', lampiran: 'lampiran' };
     const bucketName = 'pralokmin-files';
@@ -59,7 +66,7 @@ router.post('/', upload, async (req, res) => {
         .from('pralokmin_files')
         .upsert({
           bulan,
-          klaster: parseInt(klaster),
+          klaster: klasterNum,
           jenis,
           nama_file: file.originalname,
           storage_path: storagePath,

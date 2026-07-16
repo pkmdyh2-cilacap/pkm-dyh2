@@ -155,3 +155,22 @@ Format: [YYYY-MM-DD HH:MM] - Deskripsi singkat
     - Update package.json — script test:e2e, ignore e2e/ dari Jest
   File terdampak: __tests__/e2e/ (5 file), PANDUAN.md, TEST.md,
                   REKOMENDASI.md, package.json
+
+[2026-07-17 11:30] - Debugging: validasi input, keamanan, upgrade multer
+  Perubahan:
+    - Ganti operator || menjadi ?? untuk default klaster di semua route
+      agar tidak salah interpretasi nilai falsy
+    - Tambah validasi input di semua route:
+      * Klaster: range 1-5 + NaN check (units, indicators, entries, upload)
+      * String max length: nama (200), unit (200), petugas (200), bulan (50)
+      * Field wajib: indikatorId, bulan, tahun, nama, unit
+    - Hapus hardcoded Supabase URL fallback di app.js (CSP dikondisikan)
+    - Upgrade multer@1.4.5 ? multer@2.2.0 (known vulnerability fix)
+    - Tambah 19 test baru untuk coverage 100% validasi + branch coverage
+  File terdampak: src/routes/units.js, src/routes/indicators.js,
+                  src/routes/entries.js, src/routes/upload.js, src/app.js,
+                  __tests__/routes/units.test.js,
+                  __tests__/routes/indicators.test.js,
+                  __tests__/routes/entries.test.js,
+                  __tests__/routes/upload.test.js,
+                  __tests__/app.additional.test.js, package.json

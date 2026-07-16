@@ -14,6 +14,26 @@ describe('POST /api/upload', () => {
     expect(res.body).toHaveProperty('error', 'Bulan dan Klaster wajib diisi');
   });
 
+  it('rejects invalid klaster value', async () => {
+    const res = await request(app)
+      .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
+      .field('bulan', '2024-01')
+      .field('klaster', '0');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Klaster harus angka 1-5');
+  });
+
+  it('rejects bulan over 50 characters', async () => {
+    const res = await request(app)
+      .post('/api/upload')
+      .set('Authorization', 'Bearer test-token')
+      .field('bulan', 'x'.repeat(51))
+      .field('klaster', '1');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Bulan maksimal 50 karakter');
+  });
+
   it('returns 400 when no files are uploaded', async () => {
     const res = await request(app)
       .post('/api/upload')

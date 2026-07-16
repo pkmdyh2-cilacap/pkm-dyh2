@@ -20,21 +20,27 @@ app.use(cors({
 }));
 app.use(express.json());
 
-const supabaseUrl = process.env.SUPABASE_URL || 'https://prxmtxqngcapzqttljpd.supabase.co';
-const supabaseHost = supabaseUrl.replace(/https?:\/\//, '').split('/')[0];
+const supabaseUrl = process.env.SUPABASE_URL;
+let supabaseHost = '';
+if (supabaseUrl) {
+  supabaseHost = supabaseUrl.replace(/https?:\/\//, '').split('/')[0];
+} else {
+  console.warn('⚠️ SUPABASE_URL tidak diset, melewatkan konfigurasi CSP untuk Supabase');
+}
 
 app.use((req, res, next) => {
   const host = req.get('host');
   const protocol = host?.includes('localhost') || host?.startsWith('127.0.0.1') ? 'http' : 'https';
   const origin = `${protocol}://${host}`;
+  const supabaseCsp = supabaseHost ? `https://${supabaseHost}` : '';
   res.setHeader(
     "Content-Security-Policy",
     `default-src 'self' ${origin}; ` +
     `script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com ${origin}; ` +
     `style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com ${origin}; ` +
     `font-src 'self' https://cdnjs.cloudflare.com ${origin}; ` +
-    `img-src 'self' data: https://${supabaseHost} ${origin}; ` +
-    `connect-src 'self' https://${supabaseHost} ${origin}; ` +
+    `img-src 'self' data: ${supabaseCsp} ${origin}; ` +
+    `connect-src 'self' ${supabaseCsp} ${origin}; ` +
     `worker-src 'self'; frame-src 'none';`
   );
   next();

@@ -48,6 +48,18 @@ describe('POST /api/units', () => {
     expect(res.body).toHaveProperty('error');
   });
 
+  it('rejects name over 200 characters', async () => {
+    const res = await request(app).post('/api/units').set('Authorization', 'Bearer test-token').send({ nama: 'x'.repeat(201) });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Nama unit maksimal 200 karakter.');
+  });
+
+  it('rejects invalid klaster', async () => {
+    const res = await request(app).post('/api/units?klaster=abc').set('Authorization', 'Bearer test-token').send({ nama: 'Unit Baru' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Klaster harus angka 1-5');
+  });
+
   it('rejects duplicate name', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [{ id: 1 }], error: null }));
 
@@ -70,6 +82,12 @@ describe('POST /api/units', () => {
 });
 
 describe('Error handling', () => {
+  it('returns 400 for invalid klaster', async () => {
+    const res = await request(app).get('/api/units?klaster=0').set('Authorization', 'Bearer test-token');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Klaster harus angka 1-5');
+  });
+
   it('returns 500 on database error', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('DB error') }));
 

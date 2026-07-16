@@ -57,6 +57,70 @@ describe('POST /api/entries', () => {
     expect(res.body).toHaveProperty('id', 10);
   });
 
+  it('rejects missing indikatorId', async () => {
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
+      petugas: 'Dr. X',
+      bulan: 'Januari',
+      tahun: '2024'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Indikator wajib dipilih.');
+  });
+
+  it('rejects missing bulan', async () => {
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
+      indikatorId: 1,
+      petugas: 'Dr. X',
+      bulan: '',
+      tahun: '2024'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Bulan wajib diisi.');
+  });
+
+  it('rejects missing tahun', async () => {
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
+      indikatorId: 1,
+      petugas: 'Dr. X',
+      bulan: 'Januari'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Tahun wajib diisi.');
+  });
+
+  it('rejects invalid klaster on POST', async () => {
+    const res = await request(app).post('/api/entries?klaster=abc').set('Authorization', 'Bearer test-token').send({
+      indikatorId: 1,
+      petugas: 'Dr. X',
+      bulan: 'Januari',
+      tahun: '2024'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Klaster harus angka 1-5');
+  });
+
+  it('rejects bulan over 50 characters', async () => {
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
+      indikatorId: 1,
+      petugas: 'Dr. X',
+      bulan: 'x'.repeat(51),
+      tahun: '2024'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Bulan maksimal 50 karakter.');
+  });
+
+  it('rejects petugas over 200 characters', async () => {
+    const res = await request(app).post('/api/entries').set('Authorization', 'Bearer test-token').send({
+      indikatorId: 1,
+      petugas: 'x'.repeat(201),
+      bulan: 'Januari',
+      tahun: '2024'
+    });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Petugas maksimal 200 karakter.');
+  });
+
   it('stores BOR fields when bor is true', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: [{ id: 11 }], error: null }));
 

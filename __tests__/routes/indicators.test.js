@@ -29,6 +29,12 @@ describe('GET /api/indicators', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
   });
+
+  it('returns 400 for invalid klaster', async () => {
+    const res = await request(app).get('/api/indicators?klaster=0').set('Authorization', 'Bearer test-token');
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Klaster harus angka 1-5');
+  });
 });
 
 describe('POST /api/indicators', () => {
@@ -60,6 +66,24 @@ describe('POST /api/indicators', () => {
     expect(res.body).toHaveProperty('error');
   });
 
+  it('rejects name over 200 characters', async () => {
+    const res = await request(app).post('/api/indicators').set('Authorization', 'Bearer test-token').send({ nama: 'x'.repeat(201), unit: 'UGD' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Nama indikator maksimal 200 karakter.');
+  });
+
+  it('rejects unit over 200 characters', async () => {
+    const res = await request(app).post('/api/indicators').set('Authorization', 'Bearer test-token').send({ nama: 'Indikator A', unit: 'x'.repeat(201) });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Unit pelayanan maksimal 200 karakter.');
+  });
+
+  it('rejects invalid klaster', async () => {
+    const res = await request(app).post('/api/indicators?klaster=0').set('Authorization', 'Bearer test-token').send({ nama: 'Indikator A', unit: 'UGD' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Klaster harus angka 1-5');
+  });
+
   it('returns 500 when insert fails', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: new Error('Insert failed') }));
 
@@ -84,6 +108,30 @@ describe('PUT /api/indicators/:id', () => {
     const res = await request(app).put('/api/indicators/1').set('Authorization', 'Bearer test-token').send({ nama: 'Updated', unit: 'UGD', bor: true });
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('message');
+  });
+
+  it('rejects update with empty name', async () => {
+    const res = await request(app).put('/api/indicators/1').set('Authorization', 'Bearer test-token').send({ nama: '', unit: 'UGD' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('rejects update with name over 200 characters', async () => {
+    const res = await request(app).put('/api/indicators/1').set('Authorization', 'Bearer test-token').send({ nama: 'x'.repeat(201), unit: 'UGD' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Nama indikator maksimal 200 karakter.');
+  });
+
+  it('rejects update with empty unit', async () => {
+    const res = await request(app).put('/api/indicators/1').set('Authorization', 'Bearer test-token').send({ nama: 'Updated', unit: '' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error');
+  });
+
+  it('rejects update with unit over 200 characters', async () => {
+    const res = await request(app).put('/api/indicators/1').set('Authorization', 'Bearer test-token').send({ nama: 'Updated', unit: 'x'.repeat(201) });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Unit pelayanan maksimal 200 karakter.');
   });
 
   it('returns 500 when update fails', async () => {

@@ -172,9 +172,11 @@ describe('CORS & CSP default env vars (baris 14, 21)', () => {
     expect(res.status).toBe(200);
   });
 
-  it('uses default Supabase URL when SUPABASE_URL is not set', () => {
+  it('handles missing SUPABASE_URL without CSP Supabase host', async () => {
     delete process.env.SUPABASE_URL;
-    expect(() => require('../src/app')).not.toThrow();
+    const freshApp = require('../src/app');
+    const res = await request(freshApp).get('/');
+    expect(res.status).toBe(200);
   });
 });
 

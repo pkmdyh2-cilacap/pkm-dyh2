@@ -19,12 +19,22 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const klaster = req.query.klaster || 5;
+    const klasterRaw = req.query.klaster;
+    const klaster = klasterRaw ?? '5';
+    const klasterNum = parseInt(klaster);
+    if (isNaN(klasterNum) || klasterNum < 1 || klasterNum > 5) {
+      return res.status(400).json({ error: 'Klaster harus angka 1-5' });
+    }
     const d = req.body;
+    if (!d.indikatorId) return res.status(400).json({ error: 'Indikator wajib dipilih.' });
+    if (!d.bulan || !d.bulan.trim()) return res.status(400).json({ error: 'Bulan wajib diisi.' });
+    if (d.bulan.trim().length > 50) return res.status(400).json({ error: 'Bulan maksimal 50 karakter.' });
+    if (!d.tahun) return res.status(400).json({ error: 'Tahun wajib diisi.' });
+    if (d.petugas && d.petugas.length > 200) return res.status(400).json({ error: 'Petugas maksimal 200 karakter.' });
     const { data, error } = await supabase
       .from('entries')
       .insert({
-        klaster: parseInt(klaster),
+        klaster: klasterNum,
         indikator_id: d.indikatorId,
         petugas: d.petugas,
         unit: d.unit || d.petugas,
