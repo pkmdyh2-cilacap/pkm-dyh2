@@ -23,7 +23,7 @@ const supabaseHost = supabaseUrl.replace(/https?:\/\//, '').split('/')[0];
 
 app.use((req, res, next) => {
   const host = req.get('host');
-  const protocol = host?.includes('localhost') || host === '127.0.0.1' ? 'http' : 'https';
+  const protocol = host?.includes('localhost') || host?.startsWith('127.0.0.1') ? 'http' : 'https';
   const origin = `${protocol}://${host}`;
   res.setHeader(
     "Content-Security-Policy",
@@ -50,7 +50,9 @@ app.use('/api/indicators', require('./routes/indicators'));
 app.use('/api/entries', require('./routes/entries'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 
-app.use((err, req, res, next) => {
+// Diberi nama (bukan lagi anonymous) dan di-export supaya bisa dites
+// langsung sebagai unit function, tanpa harus dipicu lewat request HTTP asli.
+function errorHandler(err, req, res, next) {
   console.error('❌ Unhandled error:', err.message);
   if (err instanceof multer.MulterError) {
     if (err.code === 'LIMIT_FILE_SIZE') return res.status(400).json({ success: false, error: 'Ukuran file maksimal 10 MB' });
@@ -58,7 +60,8 @@ app.use((err, req, res, next) => {
   }
   if (err.message === 'Hanya file PDF') return res.status(400).json({ success: false, error: 'Hanya file PDF yang diperbolehkan' });
   res.status(500).json({ success: false, error: err.message || 'Internal server error' });
-});
+}
+app.use(errorHandler);
 
 async function cekKoneksi() {
   try {
@@ -77,3 +80,5 @@ async function cekKoneksi() {
 cekKoneksi();
 
 module.exports = app;
+module.exports.errorHandler = errorHandler;
+module.exports.cekKoneksi = cekKoneksi;

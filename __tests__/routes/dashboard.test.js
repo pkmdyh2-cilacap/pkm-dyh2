@@ -49,6 +49,18 @@ describe('GET /api/dashboard', () => {
     expect(res.body).toHaveProperty('error');
   });
 
+  it('handles null data gracefully (branch data ?)', async () => {
+    supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
+
+    const res = await request(app).get('/api/dashboard');
+    expect(res.status).toBe(200);
+    res.body.forEach(klaster => {
+      expect(klaster.total).toBe(0);
+      expect(klaster.tercapai).toBe(0);
+      expect(klaster.persen).toBe(0);
+    });
+  });
+
   it('calculates persen correctly for partial achievement', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({
       data: [

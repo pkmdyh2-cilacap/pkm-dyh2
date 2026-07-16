@@ -16,6 +16,14 @@ describe('GET /api/status/:bulan', () => {
     expect(res.body).toHaveProperty('error');
   });
 
+  it('returns 500 when data is null without explicit error (catch block)', async () => {
+    supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
+
+    const res = await request(app).get('/api/status/2024-01');
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('error');
+  });
+
   it('returns object with 5 clusters each having 4 boolean fields', async () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({
       data: [
@@ -83,6 +91,25 @@ describe('DELETE /api/file/:bulan/:klaster/:jenis', () => {
     const res = await request(app).delete('/api/file/2024-01/1/undangan');
     expect(res.status).toBe(500);
   });
+
+  it('returns 404 when single() returns null without fetchError (branch !data)', async () => {
+    supabaseAdmin.from.mockReturnValue(buildMockChain({ data: null, error: null }));
+
+    const res = await request(app).delete('/api/file/2024-01/1/undangan');
+    expect(res.status).toBe(404);
+    expect(res.body).toHaveProperty('error', 'File tidak ditemukan');
+  });
+
+  it('handles database delete error for single file (branch deleteDbError)', async () => {
+    const singleData = { storage_path: '2024-01/klaster1/undangan/test.pdf' };
+    supabaseAdmin.from
+      .mockReturnValueOnce(buildMockChain({ data: singleData, error: null }))
+      .mockReturnValueOnce(buildMockChain({ data: null, error: new Error('Delete failed') }));
+
+    const res = await request(app).delete('/api/file/2024-01/1/undangan');
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('error');
+  });
 });
 
 describe('DELETE /api/files/:bulan/:klaster', () => {
@@ -106,6 +133,19 @@ describe('DELETE /api/files/:bulan/:klaster', () => {
     const res = await request(app).delete('/api/files/2024-01/1');
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('success', true);
+  });
+
+  it('handles database delete error for cluster files (branch deleteDbError)', async () => {
+    const files = [
+      { storage_path: 'path1', jenis: 'undangan' },
+    ];
+    supabaseAdmin.from
+      .mockReturnValueOnce(buildMockChain({ data: files, error: null }))
+      .mockReturnValueOnce(buildMockChain({ data: null, error: new Error('Delete failed') }));
+
+    const res = await request(app).delete('/api/files/2024-01/1');
+    expect(res.status).toBe(500);
+    expect(res.body).toHaveProperty('error');
   });
 
   it('returns 404 when no files exist', async () => {
@@ -219,6 +259,21 @@ describe('GET /api/download-klaster/:bulan/:klaster', () => {
     supabaseAdmin.from.mockReturnValue(buildMockChain({
       data: [
         { jenis: 'undangan', storage_path: 'path1', nama_file: 'test.pdf' }
+      ],
+      error: null
+    }));
+    const mockBlob = { arrayBuffer: jest.fn().mockResolvedValue(new Uint8Array([1, 2, 3]).buffer) };
+    supabaseAdmin.storage.from().download.mockResolvedValue({ data: mockBlob, error: null });
+
+    const res = await request(app).get('/api/download-klaster/2024-01/1');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('application/zip');
+  });
+
+  it('uses original jenis as label when jenis is unknown (branch || fallback)', async () => {
+    supabaseAdmin.from.mockReturnValue(buildMockChain({
+      data: [
+        { jenis: 'foto_kegiatan', storage_path: 'path1', nama_file: 'foto.jpg' }
       ],
       error: null
     }));

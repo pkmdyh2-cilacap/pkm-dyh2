@@ -37,6 +37,8 @@ router.post('/', upload, async (req, res) => {
     }
     for (const [key, fileArray] of Object.entries(files)) {
       const jenis = jenisMap[key];
+      // dead code — multer.fields() already rejects unknown field names
+      /* istanbul ignore next */
       if (!jenis) continue;
       const file = fileArray[0];
       const fileExt = path.extname(file.originalname);

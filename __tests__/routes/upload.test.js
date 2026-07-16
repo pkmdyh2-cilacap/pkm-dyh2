@@ -79,6 +79,15 @@ describe('POST /api/upload', () => {
     expect(res.body).toHaveProperty('error');
   });
 
+  it('handles missing req.files gracefully via JSON body (req.files || {} fallback)', async () => {
+    const res = await request(app)
+      .post('/api/upload')
+      .set('Content-Type', 'application/json')
+      .send({ bulan: '2024-01', klaster: '1' });
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('error', 'Tidak ada file yang diupload');
+  });
+
   it('rejects files larger than 10 MB', async () => {
     const largeBuffer = Buffer.allocUnsafe(11 * 1024 * 1024);
 
