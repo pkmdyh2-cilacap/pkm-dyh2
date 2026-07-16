@@ -6,7 +6,7 @@
   <link rel="icon" href="/favicon.png" type="image/png" />
   <title>Yanlik - Puskesmas Dayeuhluhur II</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     @media (max-width: 640px) {
       .nav-link, button, .btn-like { min-height:44px; display:flex; align-items:center; }
@@ -122,41 +122,7 @@
       if (!document.querySelector('.nav-link.active')) {
         document.querySelector('.nav-link[href="index.html"]')?.classList.add('active', 'bg-emerald-100', 'text-emerald-700', 'rounded-md');
       }
-    })();
-  </script>
-  <script>
-    (function() {
-      const sidebar = document.getElementById('sidebar');
-      const toggle = document.getElementById('sidebarToggle');
-      const overlay = document.getElementById('sidebarOverlay');
-      function openSidebar() {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-      }
-      function closeSidebar() {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-      toggle && toggle.addEventListener('click', openSidebar);
-      overlay && overlay.addEventListener('click', closeSidebar);
-      sidebar && sidebar.querySelectorAll('a').forEach(function(a) {
-        if (a.id === 'pkpToggle' || a.id === 'mutuToggle') return;
-        a.addEventListener('click', closeSidebar);
-      });
-      const pkpToggle = document.getElementById('pkpToggle');
-      const pkpSubmenu = document.getElementById('pkpSubmenu');
-      const pkpChevron = document.getElementById('pkpChevron');
-      if (pkpToggle && pkpSubmenu) {
-        pkpToggle.addEventListener('click', function(e) {
-          e.preventDefault();
-          pkpSubmenu.classList.toggle('submenu-open');
-          pkpChevron && pkpChevron.classList.toggle('rotate-180');
-        });
-      }
-    })();
-  </script>
-  <script>
-    (function() {
+
       const sidebar = document.getElementById('sidebar');
       const toggle = document.getElementById('sidebarToggle');
       const overlay = document.getElementById('sidebarOverlay');

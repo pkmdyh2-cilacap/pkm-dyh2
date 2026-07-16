@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { supabase } = require('../config/supabase');
+const { supabaseAdmin: supabase } = require('../config/supabase');
 
 const router = Router();
 

@@ -134,26 +134,6 @@ function fmt(v, satuan) {
   return satuan === "persen" ? v + "%" : v;
 }
 
-function parsePeriode(v) {
-  if (!v) return null;
-  const parts = v.split(" ");
-  const namaBulan = parts.slice(0, -1).join(" ");
-  const tahun = parts[parts.length - 1];
-  if (!tahun) return null;
-  const idx = BULAN_NAMA.indexOf(namaBulan);
-  if (idx === -1) return null;
-  return { tahun, bulan: String(idx).padStart(2, "0"), bulanAngka: idx };
-}
-
-async function muatDataKlaster(klaster) {
-  try {
-    return await api(`/entries?klaster=${klaster}`);
-  } catch (e) {
-    console.error(`Gagal muat klaster ${klaster}:`, e);
-    return [];
-  }
-}
-
 async function api(path, opts = {}) {
   const res = await fetchWithRetry(API + path, {
     headers: { 'Content-Type': 'application/json' },

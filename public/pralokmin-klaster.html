@@ -6,10 +6,19 @@
   <link rel="icon" href="/favicon.png" type="image/png" />
   <title>Pralokmin Klaster</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     @media (max-width:640px){.nav-link,button,.btn-like,select,input,textarea,a{min-height:44px;display:flex;align-items:center}.container{padding-left:.75rem;padding-right:.75rem}table{font-size:0.75rem}th,td{padding:0.5rem 0.4rem!important;white-space:normal!important;word-break:break-word}h2{font-size:1.1rem!important}}
   .submenu-open{display:block!important}
+    .nav-link.active {
+      background-color: #d1fae5;
+      color: #065f46;
+      border-radius: 0.375rem;
+    }
+    .nav-link:hover:not(.active) {
+      background-color: #f3f4f6;
+      border-radius: 0.375rem;
+    }
   </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -139,7 +148,7 @@
           <i class="fas fa-trash"></i> Hapus
         </button>
         <button id="downloadFileBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition flex items-center justify-center gap-1 flex-1">
-          <i class="fas fa-download"></i> Download ZIP
+          <i class="fas fa-download"></i> Download ZIP Klaster Ini
         </button>
       </div>
     </div>
@@ -332,15 +341,8 @@
 
       async function deleteAllFiles(bulan, klaster) {
         try {
-          const response = await fetchWithRetry(`${API_BASE}/api/files/${bulan}/${klaster}`);
-          if (!response.ok) throw new Error('Gagal ambil daftar file');
-          const files = await response.json();
-          for (const f of files) {
-            const delResp = await fetchWithRetry(`${API_BASE}/api/file/${bulan}/${klaster}/${f.jenis}`, { method: 'DELETE' });
-            if (!delResp.ok) {
-              console.error('Gagal hapus file', f.jenis);
-            }
-          }
+          const response = await fetchWithRetry(`${API_BASE}/api/files/${bulan}/${klaster}`, { method: 'DELETE' });
+          if (!response.ok) throw new Error('Gagal menghapus file');
           alert('Semua file berhasil dihapus.');
         } catch (err) {
           alert('Gagal menghapus: ' + err.message);
@@ -424,64 +426,7 @@
     })();
   </script>
 
-  <style>
-    .nav-link.active {
-      background-color: #d1fae5;
-      color: #065f46;
-      border-radius: 0.375rem;
-    }
-    .nav-link:hover:not(.active) {
-      background-color: #f3f4f6;
-      border-radius: 0.375rem;
-    }
-  </style>
 </div>
-  <script>
-    (function() {
-      const sidebar = document.getElementById('sidebar');
-      const toggle = document.getElementById('sidebarToggle');
-      const overlay = document.getElementById('sidebarOverlay');
-      function openSidebar() {
-        sidebar.classList.remove('-translate-x-full');
-        overlay.classList.remove('hidden');
-      }
-      function closeSidebar() {
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-      }
-      toggle && toggle.addEventListener('click', openSidebar);
-      overlay && overlay.addEventListener('click', closeSidebar);
-      // Tutup sidebar otomatis saat link menu mobile diklik
-      sidebar && sidebar.querySelectorAll('a').forEach(function(a) {
-        if (a.id === 'pkpToggle' || a.id === 'mutuToggle') return; // jangan tutup sidebar, ini cuma toggle submenu
-        a.addEventListener('click', closeSidebar);
-      });
-
-      // Toggle submenu PKP dengan tap (selain hover di desktop)
-      const pkpToggle = document.getElementById('pkpToggle');
-      const pkpSubmenu = document.getElementById('pkpSubmenu');
-      const pkpChevron = document.getElementById('pkpChevron');
-      if (pkpToggle && pkpSubmenu) {
-        pkpToggle.addEventListener('click', function(e) {
-          e.preventDefault();
-          pkpSubmenu.classList.toggle('submenu-open');
-          pkpChevron && pkpChevron.classList.toggle('rotate-180');
-        });
-      }
-
-      // Toggle submenu Mutu
-      const mutuToggle = document.getElementById('mutuToggle');
-      const mutuSubmenu = document.getElementById('mutuSubmenu');
-      const mutuChevron = document.getElementById('mutuChevron');
-      if (mutuToggle && mutuSubmenu) {
-        mutuToggle.addEventListener('click', function(e) {
-          e.preventDefault();
-          mutuSubmenu.classList.toggle('submenu-open');
-          mutuChevron && mutuChevron.classList.toggle('rotate-180');
-        });
-      }
-    })();
-  </script>
 
 </body>
 </html>

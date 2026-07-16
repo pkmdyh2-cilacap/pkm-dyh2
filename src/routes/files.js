@@ -102,6 +102,31 @@ router.get('/download/:bulan', async (req, res) => {
   }
 });
 
+router.delete('/files/:bulan/:klaster', async (req, res) => {
+  try {
+    const { bulan, klaster } = req.params;
+    const bucketName = 'pralokmin-files';
+    const { data: files, error: fetchError } = await supabaseAdmin
+      .from('pralokmin_files')
+      .select('storage_path, jenis')
+      .eq('bulan', bulan)
+      .eq('klaster', parseInt(klaster));
+    if (fetchError) throw fetchError;
+    if (!files || files.length === 0) return res.status(404).json({ error: 'Tidak ada file untuk klaster ini' });
+    const paths = files.map(f => f.storage_path);
+    await supabaseAdmin.storage.from(bucketName).remove(paths);
+    const { error: deleteDbError } = await supabaseAdmin
+      .from('pralokmin_files')
+      .delete()
+      .eq('bulan', bulan)
+      .eq('klaster', parseInt(klaster));
+    if (deleteDbError) throw deleteDbError;
+    res.json({ success: true, message: `Semua file Klaster ${klaster} berhasil dihapus` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.get('/download-klaster/:bulan/:klaster', async (req, res) => {
   try {
     const { bulan, klaster } = req.params;

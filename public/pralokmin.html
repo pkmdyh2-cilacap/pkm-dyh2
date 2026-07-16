@@ -6,7 +6,7 @@
   <link rel="icon" href="/favicon.png" type="image/png" />
   <title>Dokumen Pralokmin</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <style>
     @media (max-width:640px){button,a,select,input,textarea{min-height:44px;display:inline-flex;align-items:center}.container{padding-left:.75rem;padding-right:.75rem}}
   </style>
@@ -57,7 +57,7 @@
           <div class="flex flex-col items-center justify-center pointer-events-none">
             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-1"></i>
             <p class="text-gray-600 font-medium text-sm">Klik atau seret file PDF</p>
-            <p class="text-xs text-gray-400">Maksimal 5 MB</p>
+            <p class="text-xs text-gray-400">Maksimal 10 MB</p>
           </div>
         </div>
         <div id="errorUndangan" class="text-sm text-red-600 mt-2 hidden"></div>
@@ -75,7 +75,7 @@
           <div class="flex flex-col items-center justify-center pointer-events-none">
             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-1"></i>
             <p class="text-gray-600 font-medium text-sm">Klik atau seret file PDF</p>
-            <p class="text-xs text-gray-400">Maksimal 5 MB</p>
+            <p class="text-xs text-gray-400">Maksimal 10 MB</p>
           </div>
         </div>
         <div id="errorNotulen" class="text-sm text-red-600 mt-2 hidden"></div>
@@ -93,7 +93,7 @@
           <div class="flex flex-col items-center justify-center pointer-events-none">
             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-1"></i>
             <p class="text-gray-600 font-medium text-sm">Klik atau seret file PDF</p>
-            <p class="text-xs text-gray-400">Maksimal 5 MB</p>
+            <p class="text-xs text-gray-400">Maksimal 10 MB</p>
           </div>
         </div>
         <div id="errorDaftarHadir" class="text-sm text-red-600 mt-2 hidden"></div>
@@ -111,7 +111,7 @@
           <div class="flex flex-col items-center justify-center pointer-events-none">
             <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-1"></i>
             <p class="text-gray-600 font-medium text-sm">Klik atau seret file PDF</p>
-            <p class="text-xs text-gray-400">Maksimal 5 MB</p>
+            <p class="text-xs text-gray-400">Maksimal 10 MB</p>
           </div>
         </div>
         <div id="errorLampiran" class="text-sm text-red-600 mt-2 hidden"></div>
@@ -161,8 +161,8 @@
           input.value = '';
           return false;
         }
-        if (file.size > 5 * 1024 * 1024) {
-          errorEl.textContent = '❌ Ukuran file maksimal 5 MB.';
+        if (file.size > 10 * 1024 * 1024) {
+          errorEl.textContent = '❌ Ukuran file maksimal 10 MB.';
           errorEl.classList.remove('hidden');
           input.value = '';
           return false;
