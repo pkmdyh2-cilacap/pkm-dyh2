@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "test": "jest --forceExit --detectOpenHandles",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:mutation": "stryker run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/jest-runner": "^9.6.1",
     "jest": "^30.4.2",
     "nodemon": "^3.0.1",
     "supertest": "^7.2.2"
